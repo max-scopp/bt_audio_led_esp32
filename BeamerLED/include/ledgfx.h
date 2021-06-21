@@ -14,7 +14,6 @@
 #pragma once
 
 #include <Arduino.h>
-#define FASTLED_INTERNAL
 #include <FastLED.h>
 
 #include <sys/time.h> // For time-of-day

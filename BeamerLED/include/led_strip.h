@@ -1,37 +1,41 @@
 #pragma once
 
-// supress fastled not-a-warning-warning
 #define FASTLED_INTERNAL
 
 #include <FastLED.h>
 
 #include "ledgfx.h"
-#include "base_effect.h"
+#include "strip_effect.h"
 #include "led_constants.h"
-#include "util.hpp"
+#include "Utilities.h"
 
+#include "effects/bounce.h"
 #include "effects/comet.h"
-#include "effects/marquee.h"
-#include "effects/twinkle.h"
 #include "effects/fire.h"
+#include "effects/marquee.h"
 #include "effects/rainbow.h"
+#include "effects/twinkle.h"
 
 using namespace std;
 
 CRGB g_LEDs[NUM_LEDS] = {0}; // Frame buffer for FastLED
+volatile size_t gFPS = 0;    //  frames per second
 
 int g_Brightness = 255;  // 0-255 LED brightness scale
 int g_PowerLimit = 3000; // 900mW Power Limit
 
-RainbowFill *g_EffectPointer = NULL;
+BouncingBallEffect bounce(2);
+CometEffect comet;
+FireEffect fire(NUM_LEDS);
+MarqueeEffect marquee;
+RainbowEffect rainbow;
+TwinkleEffect twinkle;
+
+auto *g_EffectPointer = &fire;
 
 void initLEDs()
 {
   pinMode(LED_PIN, OUTPUT);
-
-  RainbowFill rainbow;
-
-  g_EffectPointer = &rainbow;
 
   FastLED.addLeds<WS2812B, LED_PIN, GRB>(g_LEDs, NUM_LEDS); // Add our LED strip to the FastLED library
   FastLED.setBrightness(g_Brightness);
@@ -39,22 +43,24 @@ void initLEDs()
   FastLED.setMaxPowerInMilliWatts(g_PowerLimit); // Set the power limit, above which brightness will be throttled
 }
 
-const int RUN_EVERY = MS_PER_SECOND / TARGET_FPS;
+const int RUN_EVERY = TARGET_FPS > 0 ? MS_PER_SECOND / TARGET_FPS : 0;
 
 void drawLEDs()
 {
   FastLED.clear();
 
-  static int last_frame = 0;
+  static unsigned long lastFrame = 0;
 
   EVERY_N_MILLISECONDS(RUN_EVERY)
   {
-    int t = millis();
-    Serial.printf("%i           %i\r", t - last_frame, FPS(t, last_frame));
+    gFPS = FPS(lastFrame, millis());
+    lastFrame = millis();
+
+    Serial.printf("FPS: %d\r", lastFrame);
 
     if (g_EffectPointer)
     {
-      g_EffectPointer->draw(t);
+      g_EffectPointer->draw(millis());
     }
 
     /*
@@ -186,6 +192,5 @@ void drawLEDs()
     // }
 
     FastLED.show(g_Brightness); //  Show and delay
-    last_frame = t;
   }
 }
