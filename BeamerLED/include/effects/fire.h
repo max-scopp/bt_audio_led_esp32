@@ -14,9 +14,10 @@
 #define FASTLED_INTERNAL
 #include <FastLED.h>
 
+#include "strip_effect.h"
 #include "ledgfx.h"
 
-class FireEffect
+class FireEffect : public StripEffect
 {
 protected:
     int Size;        // How many pixels the flame is total
@@ -39,7 +40,7 @@ protected:
     static const byte BlendTotal = (BlendSelf + BlendNeighbor1 + BlendNeighbor2 + BlendNeighbor3);
 
 public:
-    FireEffect(int size, int cooling = 20, int sparking = 100, int sparks = 3, int sparkHeight = 4, bool breversed = true, bool bmirrored = true)
+    FireEffect(int size, int cooling = 15, int sparking = 40, int sparks = 3, int sparkHeight = 6, bool breversed = true, bool bmirrored = true)
         : Size(size),
           Cooling(cooling),
           Sparks(sparks),
@@ -59,7 +60,7 @@ public:
         delete[] heat;
     }
 
-    virtual void DrawFire()
+    virtual void draw(int t)
     {
         // First cool each cell by a litle bit
         for (int i = 0; i < Size; i++)
@@ -80,7 +81,7 @@ public:
             if (random(255) < Sparking)
             {
                 int y = Size - 1 - random(SparkHeight);
-                heat[y] = heat[y] + random(160, 255); // Can roll over which actually looks good!
+                heat[y] = heat[y] + random(160, 180);
             }
         }
 
@@ -94,5 +95,7 @@ public:
             if (bMirrored)
                 DrawPixels(!bReversed ? (2 * Size - 1 - i) : Size + i, 1, color);
         }
+
+        delay(80);
     }
 };

@@ -1,38 +1,34 @@
 
-#include "base_effect.h"
+#include "strip_effect.h"
 #include "led_constants.h"
 
-class RainbowFill : public StripEffect
+class RainbowEffect : public StripEffect
 {
 public:
     void draw(int t)
     {
         static bool doRotate = true;
-        static float rotationSpeed = 5;
+
+        static float hueDensity = 5;
+        static float hueDelta = 12;
 
         CRGB *leds = FastLED.leds();
 
-        Serial.printf("rotate? %d ", doRotate);
-
         for (int iPos = 0; iPos < NUM_LEDS; iPos++)
         {
-            float posFloat = (float)iPos / (float)NUM_LEDS;
+            float progress = hueDensity * iPos;
             int hueRotation;
 
             if (doRotate)
             {
-                int hueRotationInTime = (int)((posFloat * 255.0) + IN_SECONDS(t) + rotationSpeed);
-                hueRotation = hueRotationInTime % 255;
+                hueRotation = t / hueDelta - progress;
             }
             else
             {
-                hueRotation = posFloat * 255.0;
+                hueRotation = progress;
             }
 
-            Serial.printf("%d[%d]; ", iPos, hueRotation);
-            leds[iPos] = CHSV(hueRotation, 255, 255);
+            leds[iPos] = CHSV(hueRotation % 255, 255, 255);
         }
-
-        Serial.print("\n");
     }
 };

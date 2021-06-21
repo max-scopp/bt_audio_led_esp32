@@ -2,7 +2,7 @@
 //
 // NightDriver - (c) 2020 Dave Plummer.  All Rights Reserved.
 //
-// File:        bounce.h     
+// File:        bounce.h
 //
 // Description:
 //
@@ -18,42 +18,41 @@
 
 using namespace std;
 #include <vector>
+#include <sys/time.h>
 
 #include "ledgfx.h"
+#include "strip_effect.h"
 
-static const CRGB ballColors [] =
+static const CRGB ballColors[] =
+    {
+        CRGB::Green,
+        CRGB::Red,
+        CRGB::Blue,
+        CRGB::Orange,
+        CRGB::Indigo};
+
+class BouncingBallEffect : public StripEffect
 {
-    CRGB::Green,
-    CRGB::Red,
-    CRGB::Blue,
-    CRGB::Orange,
-    CRGB::Indigo
-};
-
-class BouncingBallEffect
-{
-  private:
-
+private:
     double InitialBallSpeed(double height) const
     {
-        return sqrt(-2 * Gravity * height);         // Because MATH!
+        return sqrt(-2 * Gravity * height); // Because MATH!
     }
 
-    size_t  _cLength;           
-    size_t  _cBalls;
-    byte    _fadeRate;
-    bool    _bMirrored;
+    size_t _cLength;
+    size_t _cBalls;
+    byte _fadeRate;
+    bool _bMirrored;
 
-    const double Gravity = -9.81;                   // Because PHYSICS!
-    const double StartHeight = 1;                   // Drop balls from max height initially
+    const double Gravity = -9.81; // Because PHYSICS!
+    const double StartHeight = 1; // Drop balls from max height initially
     const double ImpactVelocity = InitialBallSpeed(StartHeight);
-    const double SpeedKnob = 4.0;                   // Higher values will slow the effect
+    const double SpeedKnob = 4.0; // Higher values will slow the effect
 
     vector<double> ClockTimeAtLastBounce, Height, BallSpeed, Dampening;
-    vector<CRGB>   Colors;
+    vector<CRGB> Colors;
 
-  public:
-
+public:
     // BouncingBallEffect
     //
     // Caller specs strip length, number of balls, persistence level (255 is least), and whether the
@@ -72,11 +71,11 @@ class BouncingBallEffect
     {
         for (size_t i = 0; i < ballCount; i++)
         {
-            Height[i]                = StartHeight;                 // Current Ball Height
-            ClockTimeAtLastBounce[i] = UnixTime();                  // When ball last hit ground state
-            Dampening[i]             = 0.90 - i / pow(_cBalls, 2);  // Bounciness of this ball
-            BallSpeed[i]             = InitialBallSpeed(Height[i]); // Don't dampen initial launch
-            Colors[i]                = ballColors[i % ARRAYSIZE(ballColors) ];
+            Height[i] = StartHeight;                    // Current Ball Height
+            ClockTimeAtLastBounce[i] = UnixTime();      // When ball last hit ground state
+            Dampening[i] = 0.90 - i / pow(_cBalls, 2);  // Bounciness of this ball
+            BallSpeed[i] = InitialBallSpeed(Height[i]); // Don't dampen initial launch
+            Colors[i] = ballColors[i % ARRAYSIZE(ballColors)];
         }
     }
 
@@ -84,7 +83,7 @@ class BouncingBallEffect
     //
     // Draw each of the balls.  When any ball settles with too little energy, it it "kicked" to restart it
 
-    virtual void Draw()
+    virtual void draw(int t)
     {
         if (_fadeRate != 0)
         {
@@ -93,7 +92,7 @@ class BouncingBallEffect
         }
         else
             FastLED.clear();
-        
+
         // Draw each of the balls
 
         for (size_t i = 0; i < _cBalls; i++)
@@ -108,7 +107,7 @@ class BouncingBallEffect
             {
                 Height[i] = 0;
                 BallSpeed[i] = Dampening[i] * BallSpeed[i];
-                ClockTimeAtLastBounce[i] = Time();
+                ClockTimeAtLastBounce[i] = UnixTime();
 
                 if (BallSpeed[i] < 0.01)
                     BallSpeed[i] = InitialBallSpeed(StartHeight) * Dampening[i];
@@ -116,13 +115,13 @@ class BouncingBallEffect
 
             size_t position = (size_t)(Height[i] * (_cLength - 1) / StartHeight);
 
-            FastLED.leds()[position]   += Colors[i];
-            FastLED.leds()[position+1] += Colors[i];
+            FastLED.leds()[position] += Colors[i];
+            FastLED.leds()[position + 1] += Colors[i];
 
             if (_bMirrored)
             {
                 FastLED.leds()[_cLength - 1 - position] += Colors[i];
-                FastLED.leds()[_cLength - position]     += Colors[i];
+                FastLED.leds()[_cLength - position] += Colors[i];
             }
         }
         delay(20);
