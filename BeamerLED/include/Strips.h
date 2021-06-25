@@ -17,18 +17,6 @@
 
 #define LOOP_DEBUG_PIN 13
 
-StripSection *driver = new StripSection(
-    Location::Front | Location::Left,
-    "dashboard driver side",
-    0,
-    10);
-
-StripSection *passenger = new StripSection(
-    Location::Front | Location::Right,
-    "dashboard passanger side",
-    10,
-    20);
-
 class Strips
 {
 protected:
@@ -36,8 +24,16 @@ private:
     StripEffect *g_EffectPointer = nullptr;
 
     Strip<12> *dashboard = new Strip<12>(
-        {driver,
-         passenger});
+        {new StripSection(
+             Location::Front | Location::Left,
+             "dashboard driver side",
+             0,
+             10),
+         new StripSection(
+             Location::Front | Location::Right,
+             "dashboard passanger side",
+             10,
+             20)});
 
     // YOU MUST USE `auto` AS STRIP ARGUMENT OR ELSE OBJECT SLICING OCCOURS
     template <typename Func>
@@ -118,8 +114,8 @@ public:
     {
         StripSection *ssfl = nullptr;
 
-        Serial.printf("Looking for location %x... ", location);
 #if DEBUG_TO_SERIAL
+        Serial.printf("Looking for location %x... ", location);
 #endif
 
         // make sure to pass ssfl as ref down
@@ -138,13 +134,12 @@ public:
 
                      if (Position.Location == location)
                      {
+                         ssfl = &Position;
 
 #if DEBUG_TO_SERIAL
-                         Serial.println("hit!");
-#endif
                          Serial.printf("hit! Data at %p for %d\n", Position.Data, Position.Location);
+#endif
 
-                         ssfl = &Position;
                          break;
                      }
                  }
@@ -166,19 +161,17 @@ public:
 
         Serial.println();
 
-        Serial.printf("init left address %p with data at %p\n", driver, driver->Data);
-        Serial.printf("init right address %p with data at %p\n", passenger, passenger->Data);
-
         auto frontLeft = sectionForLocation(Location::Front | Location::Left);
-        fill_solid(frontLeft->Data, frontLeft->Size, CRGB::Blue);
+        fill_rainbow(frontLeft->Data, frontLeft->Size, hue, 5);
 
         auto frontRight = sectionForLocation(Location::Front | Location::Right);
-        fill_solid(frontRight->Data, frontRight->Size, CRGB::Red);
+        fill_rainbow(frontRight->Data, frontRight->Size, hue, 5);
+        flipArray(frontRight->Data, frontRight->Size);
 
         // fill_rainbow(frontLeft->Data, frontLeft->Size, hue, 20);
         // fill_rainbow(frontRight->Data, frontRight->Size, hue, 20);
 
-        hue += 1;
+        hue += 3;
 
         if (hue > 255)
         {

@@ -66,3 +66,33 @@ void beep(int durationInMs, uint32_t pitch)
 
     digitalWrite(BUZZER_PIN, LOW);
 }
+
+void reverse_in_place(CRGB *a)
+{
+    int i = ARRAYSIZE(a) - 1;
+    int j = 0;
+    while (i > j)
+    {
+        int temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+        i--;
+        j++;
+    }
+}
+
+void flipArray(CRGB *a, int asize)
+{
+    CRGB b[asize];
+    CRGB *b_p = b;
+
+    for (int i = 0; i < asize; i++)
+    {
+        //backwardsOrientation = (arraySize-1)-increment
+        b_p[asize - 1 - i] = a[i];
+    }
+    for (int i = 0; i < asize; i++)
+    {
+        a[i] = b_p[i];
+    }
+}
