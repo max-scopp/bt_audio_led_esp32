@@ -31,10 +31,5 @@ public:
         Offset = start;
 
         Data = new CRGB[Size]{0};
-        // auto c = CRGB();
-        // c.r = random(255);
-        // c.g = random(180);
-        // c.b = random(100);
-        // Data[0] = c;
     }
 };
