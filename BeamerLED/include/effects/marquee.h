@@ -15,7 +15,7 @@
 #include <Arduino.h>
 #include <FastLED.h>
 
-#include "strip_effect.h"
+#include "StripEffect.h"
 
 class MarqueeEffect : public StripEffect
 {
@@ -42,7 +42,7 @@ public:
         for (int i = scroll % 5; i < NUM_LEDS - 1; i += 5)
         {
             FastLED.leds()[i] = CRGB::Black;
-            FastLED.leds()[i+1] = CRGB::Black;
+            FastLED.leds()[i + 1] = CRGB::Black;
         }
 
         delay(50);
@@ -74,7 +74,7 @@ public:
         delay(50);
     }
 
-    void draw(int t)
+    void draw(StripSection controller, int t)
     {
         static bool mirrored = false;
 

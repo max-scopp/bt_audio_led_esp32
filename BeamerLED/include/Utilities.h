@@ -1,8 +1,13 @@
 #pragma once
 
-#define BUZZER 14
+#include <FastLED.h>
+
+using namespace std;
 
 #define MS_PER_SECOND 1000
+
+#define ARRAYSIZE(x) (sizeof(x) / sizeof(x[0]))
+#define TIMES_PER_SECOND(x) EVERY_N_MILLISECONDS(1000 / x)
 
 #define PERIOD_FROM_FREQ(f) (round(1000000 * (1.0 / f))) // Calculate period in microseconds (us) from frequency in Hz
 #define FREQ_FROM_PERIOD(p) (1.0 / p * 1000000)          // Calculate frequency in Hz given the priod in microseconds (us)
@@ -31,21 +36,33 @@ int FPS(unsigned long start, unsigned long end)
     return FPS;
 }
 
+void PrintColor(CRGB c, bool json = false)
+{
+    if (json)
+    {
+        Serial.printf("{\"r\": %d, \"g\": %d, \"b\": %d}", c.r, c.g, c.b);
+    }
+    else
+    {
+        Serial.printf("r[%d] g[%d] b[%d] ", c.r, c.g, c.b);
+    }
+}
+
 /// way to simple beep where pitch can not be higher than 1000.
 void beep(int durationInMs, uint32_t pitch)
 {
-    bool onOff = 0;
+    bool onOff = 1;
 
     int start = millis();
     int end = start + durationInMs;
 
-    while (millis() < end)
+    do
     {
-        digitalWrite(BUZZER, onOff);
+        digitalWrite(BUZZER_PIN, onOff);
         onOff = !onOff;
 
         vTaskDelay(configTICK_RATE_HZ / pitch);
-    }
+    } while (millis() < end);
 
-    digitalWrite(BUZZER, LOW);
+    digitalWrite(BUZZER_PIN, LOW);
 }

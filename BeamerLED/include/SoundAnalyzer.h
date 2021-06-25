@@ -13,6 +13,9 @@
 //
 //---------------------------------------------------------------------------
 
+#include "Constants.h"
+#include "Palettes.h"
+
 #pragma once
 
 const size_t MAX_SAMPLES = 512;
@@ -384,7 +387,7 @@ public:
 
 	void ScanInputs()
 	{
-		analogSetSamples(1);					// Otherwise voltage sweeps through range twice
+		// analogSetSamples(1);					// Otherwise voltage sweeps through range twice
 		float raw = analogRead(BRIGHTNESS_PIN); // Brightness is logrithmic, so we do the opposite
 		raw = mapFloat(raw, 0, 4096, 1.5, 10);
 		raw = roundf(raw);
@@ -406,7 +409,7 @@ public:
 		raw = mapFloat(raw, 0, 4096, 0, ARRAYSIZE(allPalettes));
 		giColorScheme = raw;
 
-		analogSetSamples(SUPERSAMPLES);
+		// analogSetSamples(SUPERSAMPLES);
 	}
 
 	// RunSamplerPass
@@ -439,8 +442,9 @@ public:
 				portENABLE_INTERRUPTS();
 				break;
 			}
-			delay(0);
 		}
+
+		delay(1);
 
 		pBackBuffer->WaitForLock();
 		pBackBuffer->FFT();

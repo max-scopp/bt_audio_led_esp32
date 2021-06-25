@@ -16,12 +16,12 @@
 #define FASTLED_INTERNAL
 #include <FastLED.h>
 
-#include "strip_effect.h"
+#include "StripEffect.h"
 
 class CometEffect : public StripEffect
 {
 public:
-    void draw(int t)
+    void draw(StripSection controller, int t)
     {
         const byte fadeAmt = 128;
         const int cometSize = 5;

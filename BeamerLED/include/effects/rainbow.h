@@ -1,11 +1,10 @@
 
-#include "strip_effect.h"
-#include "led_constants.h"
+#include "StripEffect.h"
 
 class RainbowEffect : public StripEffect
 {
 public:
-    void draw(int t)
+    void draw(StripSection *p, int t)
     {
         static bool doRotate = true;
 

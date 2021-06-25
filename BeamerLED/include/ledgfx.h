@@ -1,128 +1,194 @@
-//+--------------------------------------------------------------------------
-//
-// NightDriver - (c) 2018 Dave Plummer.  All Rights Reserved.
-//
-// File:        ledgfx.h
-//
-// Description:
-//
-//   LED Drawing Routines for Dave's Garage Tutorial series
-//
-// History:     OCt-18-2020     davepl      Created from main.cpp code
-//---------------------------------------------------------------------------
-
 #pragma once
 
-#include <Arduino.h>
+#define FASTLED_INTERNAL
+
 #include <FastLED.h>
+#include <pixeltypes.h> // Handy color and hue stuff
 
-#include <sys/time.h> // For time-of-day
+#include "ledgfx_dave.h"
+#include "StripEffect.h"
+#include "Utilities.h"
+#include "StripSection.h"
+#include "Strips.h"
 
-// Utility Macros
+// #include "effects/bounce.h"
+// #include "effects/comet.h"
+// #include "effects/fire.h"
+// #include "effects/marquee.h"
+#include "effects/rainbow.h"
+// #include "effects/twinkle.h"
 
-#define ARRAYSIZE(x) (sizeof(x) / sizeof(x[0]))
-#define TIMES_PER_SECOND(x) EVERY_N_MILLISECONDS(1000 / x)
+using namespace std;
 
-// Simple definitions of what direction we're talking about
+int g_Brightness = 255;  // 0-255 LED brightness scale
+int g_PowerLimit = 3000; // 900mW Power Limit
 
-enum PixelOrder
+// BouncingBallEffect bounce(2);
+// CometEffect comet;
+// FireEffect fire(NUM_LEDS);
+// MarqueeEffect marquee;
+// RainbowEffect rainbow;
+// TwinkleEffect twinkle;
+
+Strips manager;
+
+void UNUSED()
 {
-  Sequential = 0,
-  Reverse = 1,
-  BottomUp = 2,
-  TopDown = 4,
-  LeftRight = 8,
-  RightLeft = 16
-};
 
-DEFINE_GRADIENT_PALETTE(vu_gpGreen){
-    0, 0, 4, 0,       // near black green
-    64, 0, 255, 0,    // green
-    128, 255, 255, 0, // yellow
-    192, 255, 0, 0,   // red
-    255, 255, 0, 0    // red
-};
+  // DrawPixels(dashboardRight, 0, dashboardRight.size, CRGB::BlueViolet);
+  // Sequential Rainbows
+  // byte hue = basehue;
+  // for (int i = 0; i < NUM_LEDS; i++)
+  //   DrawPixels(0, i, 1, CHSV(hue += 16, 255, 255));
+  // basehue += 4;
+  // delay(100);
 
-DEFINE_GRADIENT_PALETTE(gpSeahawks){
-    0,
-    0,
-    0,
-    4,
-    64,
-    3,
-    38,
-    58,
-    128,
-    0,
-    21,
-    50,
-    192,
-    78,
-    167,
-    1,
-    255,
-    54,
-    87,
-    140,
-};
+  // Serial.printf("FPS: %d\r", lastFrame);
 
-inline float RandomFloat()
-{
-  float r = random(1000000L) / 1000000.0f;
-  return r;
+  // if (g_EffectPointer)
+  // {
+  //   g_EffectPointer->draw(dashboardLeft, millis());
+  // }
+
+  /*
+    // RGB Spinners
+    float b = beat16(60) / 65535.0f * FAN_SIZE;
+    DrawPixels(b, 1, CRGB::Red, Sequential, 0);
+    DrawPixels(b, 1, CRGB::Green, Sequential, 1);
+    DrawPixels(b, 1, CRGB::Blue, Sequential, 2);
+    */
+
+  /*
+    // Left to Right Cyan Wipe
+    float b = beatsin16(60) / 65535.0f * FAN_SIZE;
+    for (int iFan = 0; iFan < NUM_FANS; iFan++)
+        DrawPixels(0, b, CRGB::Cyan, LeftRight, iFan);
+    */
+
+  /*
+    // Left to Right Cyan Wipe
+    float b = beatsin16(60) / 65535.0f * FAN_SIZE;
+    for (int iFan = 0; iFan < NUM_FANS; iFan++)
+      DrawPixels(0, b, CRGB::Cyan);
+      */
+
+  /*
+    // Bottom up Green Wipe
+    float b = beatsin16(60) / 65535.0f * NUM_LEDS;
+        DrawPixels(0, b, CRGB::Green, BottomUp);
+    */
+
+  /*
+    // Bottom up Green Wipe
+    float b = beatsin16(60) / 65535.0f * NUM_LEDS;
+        DrawPixels(0, b, CRGB::Green, TopDown);
+    */
+
+  /*
+    // Simple Color Cycle
+    static byte hue = 0;
+    for (int i = 0; i < NUM_LEDS; i++)
+      DrawPixels(i, 1, CHSV(hue, 255, 255));
+    hue += 4;
+    */
+
+  /*
+    // Vertical Rainbow Wipe
+    static byte basehue = 0;
+    byte hue = basehue;
+    for (int i = 0; i < NUM_LEDS; i++)
+      DrawPixels(i, 1, CHSV(hue+=8, 255, 255), BottomUp);
+    basehue += 4;
+    */
+
+  /*
+    // Horizontal Rainbow Stripe
+    static byte basehue = 0;
+    byte hue = basehue;
+    for (int i = 0; i < NUM_LEDS; i++)
+      DrawPixels(i, 1, CHSV(hue+=16, 255, 255), LeftRight);
+    basehue += 8;
+    */
+
+  /*
+    // Rainbow Stripe Palette Effect
+    static CRGBPalette256 pal(RainbowStripeColors_p);
+    static byte baseColor = 0;
+    byte hue = baseColor;
+    for (int i = 0; i < NUM_LEDS; i++)
+      DrawPixels(i, 1, ColorFromPalette(pal, hue += 4), BottomUp);
+    baseColor += 1;
+    */
+
+  /*
+    // vu-Style Meter
+    int b = beatsin16(30) * NUM_LEDS / 65535L;
+    static const CRGBPalette256 vuPaletteGreen = vu_gpGreen;
+    for (int i = 0; i < b; i++)
+      DrawPixels(i, 1, ColorFromPalette(vuPaletteGreen, (int)(255 * i / NUM_LEDS)));
+      */
+
+  /*
+    // Sequential Fire Fans
+    static FireEffect fire(NUM_LEDS, 20, 100, 3, NUM_LEDS, true, false);
+    fire.DrawFire();
+    */
+
+  /*
+    // Bottom Up Fire Effect with extra sparking on first fan only
+    static FireEffect fire(NUM_LEDS, 20, 140, 3, FAN_SIZE, true, false);
+    fire.DrawFire(BottomUp);
+    */
+
+  /*
+    // LeftRight (Wide) Fire Effect with extra sparking on first fan only
+    static FireEffect fire(NUM_LEDS, 20, 140, 3, FAN_SIZE, true, false);
+    fire.DrawFire(LeftRight);
+    for (int i = 0; i < FAN_SIZE; i++)  // Copy end fan down onto others
+    {
+      g_LEDs[i] = g_LEDs[i + 2 * FAN_SIZE];             
+      g_LEDs[i + FAN_SIZE] = g_LEDs[i + 2 * FAN_SIZE];
+    }
+    */
+
+  // int b = beatsin16(30) * NUM_LEDS / 65535L;
+  // static const CRGBPalette256 seawhawksPalette = vu_gpSeahawks;
+  // for (int i = 0; i < NUM_LEDS; i++)
+  //     DrawPixels(i, 1, ColorFromPalette(seawhawksPalette, beat8(64) + (int)(255 * i / NUM_LEDS)), BottomUp);
+
+  // EVERY_N_MILLISECONDS(250)
+  // {
+  //     g_OLED.clearBuffer();
+  //     g_OLED.setCursor(0, g_lineHeight);
+  //     g_OLED.printf("FPS  : %u", FastLED.getFPS());
+  //     g_OLED.setCursor(0, g_lineHeight * 2);
+  //     g_OLED.printf("Power: %u mW", calculate_unscaled_power_mW(g_LEDs, 4));
+  //     g_OLED.setCursor(0, g_lineHeight * 3);
+  //     g_OLED.printf("Brite: %d", calculate_max_brightness_for_power_mW(g_Brightness, g_PowerLimit));
+  //     g_OLED.sendBuffer();
+  // }
 }
 
-inline double UnixTime()
+void StripAnimationLoop(void *)
 {
-  timeval tv = {0};
-  gettimeofday(&tv, nullptr);
-  return (double)(tv.tv_usec / 1000000.0 + (double)tv.tv_sec);
-}
+  manager.setup(gBrightness, g_PowerLimit);
 
-// FractionalColor
-//
-// Returns a fraction of a color; abstracts the fadeToBlack out to this function in case we
-// want to improve the color math or do color correction all in one location at a later date.
+  // auto leftStrip = StripSection::ledsFor(&dashboardLeft);
 
-CRGB ColorFraction(CRGB colorIn, float fraction)
-{
-  fraction = min(1.0f, fraction);
-  return CRGB(colorIn).fadeToBlackBy(255 * (1.0f - fraction));
-}
+  // FastLED.addLeds<WS2812B, 12, GRB>(
+  //     leftStrip,
+  //     dashboardLeft.offset(),
+  //     dashboardLeft.size());
 
-// DrawPixels
-//
-// Uses floating point math to draw a floating point number of pixels starting at a
-// floating point offset into the strip
+  FastLED.showColor(CRGB::Yellow);
 
-void DrawPixels(float fPos, float count, CRGB color)
-{
-  // Calculate how much the first pixel will hold
-  float availFirstPixel = 1.0f - (fPos - (long)(fPos));
-  float amtFirstPixel = min(availFirstPixel, count);
-  float remaining = min(count, FastLED.size() - fPos);
-  int iPos = fPos;
+  // FastLED.addLeds<WS2812B, 12, GRB>(
+  //     StripSection::ledsFor(&dashboardRight),
+  //     dashboardRight.offset(),
+  //     dashboardRight.size());
 
-  // Blend (add) in the color of the first partial pixel
-
-  if (remaining > 0.0f)
+  for (;;)
   {
-    FastLED.leds()[iPos++] += ColorFraction(color, amtFirstPixel);
-    remaining -= amtFirstPixel;
-  }
-
-  // Now draw any full pixels in the middle
-
-  while (remaining > 1.0f)
-  {
-    FastLED.leds()[iPos++] += color;
-    remaining--;
-  }
-
-  // Draw tail pixel, up to a single full pixel
-
-  if (remaining > 0.0f)
-  {
-    FastLED.leds()[iPos] += ColorFraction(color, remaining);
+    manager.loop();
   }
 }

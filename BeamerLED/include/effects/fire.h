@@ -14,8 +14,8 @@
 #define FASTLED_INTERNAL
 #include <FastLED.h>
 
-#include "strip_effect.h"
-#include "ledgfx.h"
+#include "StripEffect.h"
+#include "ledgfx_dave.h"
 
 class FireEffect : public StripEffect
 {
@@ -60,7 +60,7 @@ public:
         delete[] heat;
     }
 
-    virtual void draw(int t)
+    virtual void draw(StripSection *p, int t)
     {
         // First cool each cell by a litle bit
         for (int i = 0; i < Size; i++)
@@ -91,9 +91,9 @@ public:
         {
             CRGB color = HeatColor(heat[i]);
             int j = bReversed ? (Size - 1 - i) : i;
-            DrawPixels(j, 1, color);
+            DrawPixels(p, j, 1, color);
             if (bMirrored)
-                DrawPixels(!bReversed ? (2 * Size - 1 - i) : Size + i, 1, color);
+                DrawPixels(p, !bReversed ? (2 * Size - 1 - i) : Size + i, 1, color);
         }
 
         delay(80);

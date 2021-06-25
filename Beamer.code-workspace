@@ -56,7 +56,8 @@
 			"utility": "cpp",
 			"typeinfo": "cpp",
 			"string": "cpp",
-			"random": "cpp"
+			"random": "cpp",
+			"iostream": "cpp"
 		}
 	}
 }

@@ -16,8 +16,8 @@
 #define FASTLED_INTERNAL
 #include <FastLED.h>
 
-#include "strip_effect.h"
-#include "ledgfx.h"
+#include "StripEffect.h"
+#include "ledgfx_dave.h"
 
 static const CRGB TwinkleColors[] =
     {
@@ -42,7 +42,7 @@ public:
         delay(200);
     }
 
-    void draw(int t)
+    void draw(StripSection controller, int t)
     {
         DrawTwinkle();
     }

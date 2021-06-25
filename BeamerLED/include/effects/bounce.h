@@ -20,8 +20,8 @@ using namespace std;
 #include <vector>
 #include <sys/time.h>
 
-#include "ledgfx.h"
-#include "strip_effect.h"
+#include "ledgfx_dave.h"
+#include "StripEffect.h"
 
 static const CRGB ballColors[] =
     {
@@ -83,7 +83,7 @@ public:
     //
     // Draw each of the balls.  When any ball settles with too little energy, it it "kicked" to restart it
 
-    virtual void draw(int t)
+    virtual void draw(StripSection controller, int t)
     {
         if (_fadeRate != 0)
         {
