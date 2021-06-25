@@ -6,7 +6,7 @@
 class StripSection
 {
 public:
-    CRGB *Data = nullptr; // the led data to render within this section
+    CRGB *Data; // the led data to render within this section
 
     int Index; // the index of the section of all strips
 
@@ -31,5 +31,10 @@ public:
         Offset = start;
 
         Data = new CRGB[Size]{0};
+        // auto c = CRGB();
+        // c.r = random(255);
+        // c.g = random(180);
+        // c.b = random(100);
+        // Data[0] = c;
     }
 };

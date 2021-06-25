@@ -63,9 +63,11 @@ public:
 
     void show()
     {
+        Serial.println("show");
         auto lCycle = digitalRead(LOOP_DEBUG_PIN);
         digitalWrite(LOOP_DEBUG_PIN, !lCycle);
 
+        Serial.println("compute");
         computeData();
 
 #if DEBUG_TO_SERIAL
@@ -114,15 +116,14 @@ public:
 
     StripSection *sectionForLocation(int location)
     {
-
-#if DEBUG_TO_SERIAL
-        Serial.printf("Looking for location %x... ", location);
-#endif
-
         StripSection *ssfl = nullptr;
 
+        Serial.printf("Looking for location %x... ", location);
+#if DEBUG_TO_SERIAL
+#endif
+
         // make sure to pass ssfl as ref down
-        each([&ssfl, location](auto &sm) mutable
+        each([&](auto &sm) mutable
              {
 
 #if DEBUG_TO_SERIAL
@@ -131,7 +132,9 @@ public:
 
                  for (int i = 0; i < sm.Positions.size(); i++)
                  {
-                     auto Position = sm.Positions[i];
+                     StripSection Position = *sm.Positions[i];
+
+                     Serial.printf("\nCheck %d === %d\n", Position.Location, location);
 
                      if (Position.Location == location)
                      {
@@ -139,6 +142,7 @@ public:
 #if DEBUG_TO_SERIAL
                          Serial.println("hit!");
 #endif
+                         Serial.printf("hit! Data at %p for %d\n", Position.Data, Position.Location);
 
                          ssfl = &Position;
                          break;
@@ -160,20 +164,16 @@ public:
 
         static int hue = 0;
 
+        Serial.println();
+
+        Serial.printf("init left address %p with data at %p\n", driver, driver->Data);
+        Serial.printf("init right address %p with data at %p\n", passenger, passenger->Data);
+
         auto frontLeft = sectionForLocation(Location::Front | Location::Left);
+        fill_solid(frontLeft->Data, frontLeft->Size, CRGB::Blue);
+
         auto frontRight = sectionForLocation(Location::Front | Location::Right);
-
-        fill_solid(frontLeft->Data, frontLeft->Size, CRGB::Red);
-        fill_solid(frontRight->Data, frontRight->Size, CRGB::Blue);
-
-        Serial.printf("driver %p    passanger %p\n", driver, passenger);
-        Serial.printf("same? %i\n", driver == passenger);
-
-        Serial.printf("%d %d %d %d",
-                      frontLeft->_Start,
-                      frontLeft->_End,
-                      frontRight->_Start,
-                      frontRight->_End);
+        fill_solid(frontRight->Data, frontRight->Size, CRGB::Red);
 
         // fill_rainbow(frontLeft->Data, frontLeft->Size, hue, 20);
         // fill_rainbow(frontRight->Data, frontRight->Size, hue, 20);

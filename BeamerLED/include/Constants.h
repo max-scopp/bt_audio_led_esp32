@@ -7,6 +7,6 @@
 #define LED_PIN 12
 #define TARGET_FPS 60
 
-#define DEBUG_TO_SERIAL false
+#define DEBUG_TO_SERIAL true
 
 #define PEAK2_DECAY_PER_SECOND 2.2f

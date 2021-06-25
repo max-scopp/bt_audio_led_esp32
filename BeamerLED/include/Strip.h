@@ -28,20 +28,14 @@ public:
 
     CRGB *Data = new CRGB(); // the data array for all sections within
 
-    std::vector<StripSection> Positions; // the registered sections within the strip
+    std::vector<StripSection *> Positions; // the registered sections within the strip
 
-    Strip(std::vector<StripSection> positions) : Positions(positions)
+    Strip(std::vector<StripSection *> positions) : Positions(positions)
     {
         for (int i = 0; i < Positions.size(); i++)
         {
             auto position = Positions[i];
-            for (int k = 0; k < position.Size; k++)
-            {
-                PrintColor(position.Data[i]);
-                Serial.println();
-            }
-
-            LedCount += position.Size;
+            LedCount += position->Size;
         }
 
         FastLED.addLeds<WS2812B, PIN, GRB>(Data, LedCount);
@@ -57,8 +51,10 @@ public:
         // for each position in this strip...
         for (int i = 0; i < Positions.size(); i++)
         {
-            StripSection position = Positions[i]; // get the section of the strip
-            CRGB *pData = position.Data;          // get the data within that section
+            StripSection position = *Positions[i]; // get the section of the strip
+            CRGB *pData = position.Data;           // get the data within that section
+
+            Serial.printf("for pos %d data is at %p}\n", position.Location, position.Data);
 
             // for each pixel in the section...
             for (int k = 0; k < position.Size; k++)
