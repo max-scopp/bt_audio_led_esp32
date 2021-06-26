@@ -8,4 +8,6 @@ enum Location
 
     Bottom = 0x10,
     Top = 0x20,
+
+    Outside = 0x30,
 };

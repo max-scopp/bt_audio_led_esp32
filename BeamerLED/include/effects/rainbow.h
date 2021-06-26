@@ -4,16 +4,21 @@
 class RainbowEffect : public StripEffect
 {
 public:
-    void draw(StripSection *p, int t)
+    bool uniqueSections = false;
+    bool fixAlignment = true;
+
+    Interpolation interpolation = Interpolation::Linear;
+
+    vector<CRGB> draw(int l, int t, int as)
     {
+        vector<CRGB> r(as);
+
         static bool doRotate = true;
 
         static float hueDensity = 5;
         static float hueDelta = 12;
 
-        CRGB *leds = FastLED.leds();
-
-        for (int iPos = 0; iPos < NUM_LEDS; iPos++)
+        for (int iPos = 0; iPos < as; iPos++)
         {
             float progress = hueDensity * iPos;
             int hueRotation;
@@ -27,7 +32,11 @@ public:
                 hueRotation = progress;
             }
 
-            leds[iPos] = CHSV(hueRotation % 255, 255, 255);
+            auto c = CRGB();
+
+            r[iPos] = c.setHSV(hueRotation % 255, 255, 255);
         }
+
+        return r;
     }
 };

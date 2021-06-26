@@ -11,13 +11,6 @@
 #include "StripSection.h"
 #include "Strips.h"
 
-// #include "effects/bounce.h"
-// #include "effects/comet.h"
-// #include "effects/fire.h"
-// #include "effects/marquee.h"
-#include "effects/rainbow.h"
-// #include "effects/twinkle.h"
-
 using namespace std;
 
 int g_Brightness = 255;  // 0-255 LED brightness scale
@@ -171,21 +164,7 @@ void UNUSED()
 
 void StripAnimationLoop(void *)
 {
-  manager.setup(gBrightness, g_PowerLimit);
-
-  // auto leftStrip = StripSection::ledsFor(&dashboardLeft);
-
-  // FastLED.addLeds<WS2812B, 12, GRB>(
-  //     leftStrip,
-  //     dashboardLeft.offset(),
-  //     dashboardLeft.size());
-
-  FastLED.showColor(CRGB::Yellow);
-
-  // FastLED.addLeds<WS2812B, 12, GRB>(
-  //     StripSection::ledsFor(&dashboardRight),
-  //     dashboardRight.offset(),
-  //     dashboardRight.size());
+  manager.setup(g_Brightness, g_PowerLimit);
 
   for (;;)
   {

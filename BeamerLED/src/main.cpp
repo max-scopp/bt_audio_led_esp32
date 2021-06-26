@@ -59,6 +59,14 @@ volatile unsigned long g_cIRQMisses = 0;  // Number of times buffer wasn't locka
 #include "PeakData.h"
 #include "SoundAnalyzer.h" // Measures and processes the incoming audio
 
+#include "effects/debug.h"
+#include "effects/rainbow.h"
+// #include "effects/bounce.h"
+// #include "effects/comet.h"
+// #include "effects/fire.h"
+// #include "effects/marquee.h"
+// #include "effects/twinkle.h"
+
 using namespace std;
 
 TaskHandle_t stripTask;
@@ -195,6 +203,8 @@ void setup()
   // audial ready information
   beep(100, 500);
   beep(100, 1000);
+
+  manager.g_EffectPointer = new RainbowEffect();
 }
 
 void loop()

@@ -12,9 +12,9 @@ class IStrip
 {
 public:
     int Pin = 0;
-    int LedCount = 3;
+    int LedCount = 666; // just helps me identify object slicing as thats the devil
     CRGB *Data;
-    std::vector<StripSection> Positions;
+    std::vector<StripSection *> Positions;
     virtual void compute() = 0;
 };
 
@@ -54,7 +54,11 @@ public:
             StripSection position = *Positions[i]; // get the section of the strip
             CRGB *pData = position.Data;           // get the data within that section
 
-            Serial.printf("for pos %d data is at %p}\n", position.Location, position.Data);
+            Serial.printf("for pos %d data is at %p\n", position.Location, position.Data);
+
+#if DEBUG_TO_SERIAL
+            Serial.print("[");
+#endif
 
             // for each pixel in the section...
             for (int k = 0; k < position.Size; k++)
@@ -71,12 +75,16 @@ public:
                     stripI);
 
                 PrintColor(color, true);
-                Serial.println("}");
+                Serial.print("},");
 #endif
 
                 // finally, assign the current section's pixel to the complete strip
                 Data[stripI] = color;
             }
+
+#if DEBUG_TO_SERIAL
+            Serial.println("]");
+#endif
         }
     }
 };

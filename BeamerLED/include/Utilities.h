@@ -44,7 +44,7 @@ void PrintColor(CRGB c, bool json = false)
     }
     else
     {
-        Serial.printf("r[%d] g[%d] b[%d] ", c.r, c.g, c.b);
+        Serial.printf("rgb(%d, %d, %d) ", c.r, c.g, c.b);
     }
 }
 
@@ -67,32 +67,29 @@ void beep(int durationInMs, uint32_t pitch)
     digitalWrite(BUZZER_PIN, LOW);
 }
 
-void reverse_in_place(CRGB *a)
+template <typename T>
+void reverse_in_place(vector<T> a)
 {
-    int i = ARRAYSIZE(a) - 1;
+    int size = a.size();
+    Serial.printf("reverse_in_place.size %d\n", size);
+
+    auto arr = &a;
+
+    int i = size - 1;
     int j = 0;
     while (i > j)
     {
-        int temp = a[i];
+        Serial.printf("i j %d %d\n ", i, j);
+        auto temp = arr[i];
         a[i] = a[j];
-        a[j] = temp;
+        a[j] = *temp;
         i--;
         j++;
     }
 }
 
-void flipArray(CRGB *a, int asize)
+CRGB mix(CRGB a, CRGB b, float m)
 {
-    CRGB b[asize];
-    CRGB *b_p = b;
-
-    for (int i = 0; i < asize; i++)
-    {
-        //backwardsOrientation = (arraySize-1)-increment
-        b_p[asize - 1 - i] = a[i];
-    }
-    for (int i = 0; i < asize; i++)
-    {
-        a[i] = b_p[i];
-    }
+    int bm = b * 255;
+    return blend(a, b, bm);
 }
