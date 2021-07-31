@@ -48,25 +48,6 @@ void PrintColor(CRGB c, bool json = false)
     }
 }
 
-/// way to simple beep where pitch can not be higher than 1000.
-void beep(int durationInMs, uint32_t pitch)
-{
-    bool onOff = 1;
-
-    int start = millis();
-    int end = start + durationInMs;
-
-    do
-    {
-        digitalWrite(BUZZER_PIN, onOff);
-        onOff = !onOff;
-
-        vTaskDelay(configTICK_RATE_HZ / pitch);
-    } while (millis() < end);
-
-    digitalWrite(BUZZER_PIN, LOW);
-}
-
 template <typename T>
 void reverse_in_place(vector<T> a)
 {
@@ -92,4 +73,19 @@ CRGB mix(CRGB a, CRGB b, float m)
 {
     int bm = b * 255;
     return blend(a, b, bm);
+}
+
+double noteFreq(note_t note, uint8_t octave)
+{
+    const uint16_t noteFrequencyBase[12] = {
+        //   C        C#       D        Eb       E        F       F#        G       G#        A       Bb        B
+        4186, 4435, 4699, 4978, 5274, 5588, 5920, 6272, 6645, 7040, 7459, 7902};
+
+    if (octave > 8 || note >= NOTE_MAX)
+    {
+        return 0;
+    }
+    double noteFreq = (double)noteFrequencyBase[note] / (double)(1 << (8 - octave));
+
+    return noteFreq;
 }

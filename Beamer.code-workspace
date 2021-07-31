@@ -1,16 +1,8 @@
 {
 	"folders": [
 		{
-			"name": "Common",
-			"path": "Common"
-		},
-		{
 			"name": "BeamerLED",
 			"path": "BeamerLED"
-		},
-		{
-			"name": "BeamerBLE",
-			"path": "BeamerBLE"
 		}
 	],
 	"settings": {
@@ -57,7 +49,10 @@
 			"typeinfo": "cpp",
 			"string": "cpp",
 			"random": "cpp",
-			"iostream": "cpp"
-		}
+			"iostream": "cpp",
+			"ledc_struct.h": "c",
+			"ledc_reg.h": "c"
+		},
+		"idf.gitPath": "C:\\Users\\Max\\.espressif\\tools\\idf-git\\cmd\\git.exe"
 	}
 }

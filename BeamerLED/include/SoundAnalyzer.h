@@ -21,9 +21,15 @@
 const size_t MAX_SAMPLES = 512;
 const size_t SAMPLING_FREQUENCY = 25000;
 
-#define PRINT_PEAKS 1
-#define SHOW_SAMPLE_TIMING 1
-#define SHOW_FFT_TIMING 1
+#define PRINT_PEAKS 0
+#define SHOW_SAMPLE_TIMING 0
+#define SHOW_FFT_TIMING 0
+
+volatile unsigned long g_cSamples = 0;	  // Total number of samples successfully collected
+volatile unsigned long g_cInterrupts = 0; // Total number of interrupts that have occured
+volatile unsigned long g_cIRQMisses = 0;  // Number of times buffer wasn't lockable by IRQ
+
+volatile float gScaler = 0.0f; // Instanteous read of LED display vertical scaling
 
 // Depending on how many bamds have been defined, one of these tables will contain the frequency
 // cutoffs for that "size" of a spectrum display.  Really only the 32 band is "scientific" in any
@@ -322,7 +328,7 @@ public:
 		{
 			Serial.printf("%8.1f, ", _vPeaks[i]);
 		}
-		Serial.println("");
+		Serial.print("\r");
 #endif
 	}
 
@@ -425,7 +431,7 @@ public:
 			if (_bufferA._cSamples == MAX_SAMPLES)
 			{
 				portDISABLE_INTERRUPTS();
-				ScanInputs();
+				// ScanInputs();
 				_bufferB.Reset();
 				_pIRQBuffer = &_bufferB;
 				pBackBuffer = &_bufferA;
@@ -435,7 +441,7 @@ public:
 			if (_bufferB._cSamples == MAX_SAMPLES)
 			{
 				portDISABLE_INTERRUPTS();
-				ScanInputs();
+				// ScanInputs();
 				_bufferA.Reset();
 				_pIRQBuffer = &_bufferA;
 				pBackBuffer = &_bufferB;

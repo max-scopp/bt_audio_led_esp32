@@ -13,7 +13,7 @@
 
 using namespace std;
 
-int g_Brightness = 255;  // 0-255 LED brightness scale
+int g_Brightness = 30;  // 0-255 LED brightness scale
 int g_PowerLimit = 3000; // 900mW Power Limit
 
 // BouncingBallEffect bounce(2);
@@ -23,7 +23,7 @@ int g_PowerLimit = 3000; // 900mW Power Limit
 // RainbowEffect rainbow;
 // TwinkleEffect twinkle;
 
-Strips manager;
+LEDGFX manager;
 
 void UNUSED()
 {
@@ -160,14 +160,4 @@ void UNUSED()
   //     g_OLED.printf("Brite: %d", calculate_max_brightness_for_power_mW(g_Brightness, g_PowerLimit));
   //     g_OLED.sendBuffer();
   // }
-}
-
-void StripAnimationLoop(void *)
-{
-  manager.setup(g_Brightness, g_PowerLimit);
-
-  for (;;)
-  {
-    manager.loop();
-  }
 }

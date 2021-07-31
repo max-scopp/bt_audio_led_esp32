@@ -1,5 +1,7 @@
 #include "Utilities.h"
 
+#pragma once
+
 // PeakData class
 //
 // Simple data class that holds the music peaks for up to 32 bands.  When the sound analyzer finishes a pass, its

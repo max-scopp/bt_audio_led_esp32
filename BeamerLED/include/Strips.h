@@ -16,27 +16,33 @@
 
 #include "StripEffect.h"
 #include "ledgfx_dave.h"
+#include "PeakData.h"
 
-#define LOOP_DEBUG_PIN 13
+volatile float gLogScale = 2.0f;     // How exponential the peaks are made to be
+volatile float gBrightness = 64;     // LED matrix brightness, 0-255
+volatile float gPeakDecay = 0.0;     // Peak decay for white line on top of spectrum bars
+volatile float gColorSpeed = 128.0f; // How fast the color palette rotates (smaller is faster, it's a time divisor)
+volatile float gVU = 0;              // Instantaneous read of VU value
+volatile int giColorScheme = 0;      // Global color scheme (index into table of palettes)
 
-class Strips
+class LEDGFX
 {
 protected:
 private:
     bool bootupCycle = true;
     float Brightness = 0.0;
 
-    Strip<12> *dashboard = new Strip<12>(
+    Strip<32> *dashboard = new Strip<32>(
         {new StripSection(
              Location::Front | Location::Left,
              "dashboard driver side",
              0,
-             10),
+             15),
          new StripSection(
              Location::Front | Location::Right,
-             "dashboard passanger side",
-             10,
-             20)});
+             "dashboard driver side",
+             15,
+             30)});
 
     // YOU MUST USE `auto` AS STRIP ARGUMENT OR ELSE OBJECT SLICING OCCOURS
     template <typename Func>
@@ -48,31 +54,47 @@ private:
 public:
     StripEffect *g_EffectPointer = nullptr;
 
+    PeakData _peaks;
+
+    float _peak1Decay[BAND_COUNT] = {0};
+    float _peak2Decay[BAND_COUNT] = {0};
+
+    unsigned long _lastPeak1Time[BAND_COUNT] = {0};
+
     void setup(uint32_t _brightness, uint32_t mwPowerLimit)
     {
         pinMode(LOOP_DEBUG_PIN, OUTPUT);
 
-        Brightness = _brightness;
-        Serial.printf("setup target brightness as %d\n", Brightness);
+        Serial.printf("setup target brightness as %d ", _brightness);
 
-        FastLED.setBrightness(_brightness);
-        FastLED.setMaxPowerInMilliWatts(mwPowerLimit);
+        Brightness = _brightness;           // this is the internal intended brightness (can change!)
+        FastLED.setBrightness(_brightness); // this is the default brightness for the strips before any render happened. (boot render may overwrite this!)
+        // FastLED.setMaxPowerInMilliWatts(mwPowerLimit);
+
+        each([](auto sm)
+             {
+                 for (int i = 0; i < sm.Positions.size(); i++)
+                 {
+                     auto Position = *sm.Positions[i];
+                     Serial.printf("@%d [%d] %dL %dO %dS ", sm.Pin, Position.Index, Position.Location, Position.Offset, Position.Size);
+                 }
+             });
     }
 
     void bootupRender()
     {
-        static int fadeInMs = 800;
+        static int fadeInMs = 1e+3;
         static int end = millis() + fadeInMs;
 
         int now = millis();
 
         int d = end - now;
         double p = (double)(fadeInMs - d) / fadeInMs;
-        double l = easeOutQuad(p);
+        double l = easeInOutQuint(p);
 
         if (d > 0)
         {
-            FastLED.setBrightness(Brightness * l);
+            FastLED.setBrightness((double)Brightness * l);
         }
         else
         {
@@ -80,22 +102,9 @@ public:
             FastLED.setBrightness(Brightness);
         }
 
-        // static int end = ((int)millis()) + 3000;
-
-        // int now = millis();
-        // int p = now / end;
-
-        // if (p >= 1.0f)
-        // {
-        //     bootupCycle = false;
-        //     FastLED.setBrightness(Brightness);
-        // }
-        // else
-        // {
-        //     auto bootupBrightness = (double)Brightness * p;
-        //     Serial.printf("brightness bootup is %f (%d / %d) \n", p, now, end);
-        //     FastLED.setBrightness(bootupBrightness);
-        // }
+#if DEBUG_TO_SERIAL
+        Serial.printf("setBrightness  %f \t (L %f) \n", (double)Brightness * l, l);
+#endif
     }
 
     void loop()
@@ -115,6 +124,9 @@ public:
 #endif
 
             FastLED.clear();
+
+            DecayPeaks();
+
             render();
         }
     }
@@ -186,7 +198,13 @@ public:
 
     void render()
     {
-        if (g_EffectPointer)
+        if (!g_EffectPointer)
+        {
+#if DEBUG_TO_SERIAL
+            Serial.println("No effect to render");
+#endif
+        }
+        else
         {
             if (bootupCycle)
             {
@@ -195,10 +213,13 @@ public:
 
             int prefferedArraySize = computePrefferedArraySizeForEffectDraw();
 
+#if DEBUG_TO_SERIAL
             if (!g_EffectPointer->uniqueSections)
             {
+
                 Serial.println("g_EffectPointer->createsUniqueSections() OPTION IS IGNORED; NOT IMPLEMENTED");
             }
+#endif
 
             each([&](auto &sm)
                  {
@@ -206,8 +227,6 @@ public:
                      {
                          StripSection Position = *sm.Positions[i];
                          vector<CRGB> r = g_EffectPointer->draw(Position.Location, millis(), prefferedArraySize);
-
-                         PrintColor(r[0]);
 
                          if (g_EffectPointer->fixAlignment)
                          {
@@ -298,31 +317,6 @@ public:
                  });
         }
 
-        // FIXME: DEBUG CODE, REMOVE!
-        // static int hue = 0;
-
-        // auto frontLeft = sectionForLocation(Location::Front | Location::Left);
-        // fill_rainbow(frontLeft->Data, frontLeft->Size, hue, 5);
-
-        // auto frontRight = sectionForLocation(Location::Front | Location::Right);
-        // fill_rainbow(frontRight->Data, frontRight->Size, hue, 5);
-        // reverse_in_place(frontRight->Data, frontRight->Size);
-
-        // // fill_rainbow(frontLeft->Data, frontLeft->Size, hue, 20);
-        // // fill_rainbow(frontRight->Data, frontRight->Size, hue, 20);
-
-        // hue += 3;
-
-        // if (hue > 255)
-        // {
-        //     hue = 0;
-        // }
-
-        // // if (dashboardLeft)
-        // // {
-        // //     DrawPixels(dashboardLeft, 20, dashboardLeft->Size, CRGB::Violet);
-        // // }
-
         show();
     }
 
@@ -348,6 +342,7 @@ public:
                      auto pixel = sm.Data[i];
 
                      PrintColor(pixel, true);
+
                      Serial.print(",");
                  }
                  Serial.print("]},");
@@ -357,5 +352,50 @@ public:
 #endif
 
         FastLED.show();
+    }
+
+    // Display::SetPeaks
+    //
+    // Allows the analyzer to call and set the peak data for all of the bands at once.
+
+    void SetPeaks(byte bands, PeakData peakData)
+    {
+        //Serial.print("SetPeaks: ");
+        for (int i = 0; i < bands; i++)
+        {
+            _peaks = peakData;
+            // Serial.printf("%f, ", _peaks.Peaks[i]);
+
+            if (peakData.Peaks[i] > _peak1Decay[i])
+            {
+                _peak1Decay[i] = peakData.Peaks[i];
+                _lastPeak1Time[i] = millis(); // For the white line top peak we track when it was set so we can age it out visually
+            }
+            if (peakData.Peaks[i] > _peak2Decay[i])
+            {
+                _peak2Decay[i] = peakData.Peaks[i];
+            }
+        }
+        //Serial.println("");
+    }
+
+    // SpectrumDisplay::DecayPeaks
+    //
+    // Every so many ms we decay the peaks by a given amount
+
+    void DecayPeaks()
+    {
+        static unsigned long lastDecay = 0;
+        float seconds = (millis() - lastDecay) / (float)MS_PER_SECOND;
+        lastDecay = millis();
+
+        float decayAmount1 = std::max(0.0f, seconds * gPeakDecay);
+        float decayAmount2 = seconds * PEAK2_DECAY_PER_SECOND;
+
+        for (int iBand = 0; iBand < BAND_COUNT; iBand++)
+        {
+            _peak1Decay[iBand] -= std::min(decayAmount1, _peak1Decay[iBand]);
+            _peak2Decay[iBand] -= std::min(decayAmount2, _peak2Decay[iBand]);
+        }
     }
 };

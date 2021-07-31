@@ -26,18 +26,22 @@ public:
 
     int LedCount = 0; // how many leds over all sections there are
 
-    CRGB *Data = new CRGB(); // the data array for all sections within
+    CRGB *Data; // the data array for all sections within
 
     std::vector<StripSection *> Positions; // the registered sections within the strip
 
     Strip(std::vector<StripSection *> positions) : Positions(positions)
     {
+        // TODO Refactor so you can skip leds in between
         for (int i = 0; i < Positions.size(); i++)
         {
-            auto position = Positions[i];
+            StripSection *position = Positions[i];
             LedCount += position->Size;
         }
 
+        Data = new CRGB[LedCount]{0};
+        
+        pinMode(PIN, OUTPUT);
         FastLED.addLeds<WS2812B, PIN, GRB>(Data, LedCount);
     }
 
@@ -54,9 +58,9 @@ public:
             StripSection position = *Positions[i]; // get the section of the strip
             CRGB *pData = position.Data;           // get the data within that section
 
+#if DEBUG_TO_SERIAL
             Serial.printf("for pos %d data is at %p\n", position.Location, position.Data);
 
-#if DEBUG_TO_SERIAL
             Serial.print("[");
 #endif
 
