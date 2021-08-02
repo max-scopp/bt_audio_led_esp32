@@ -15,6 +15,7 @@
 
 #include "Constants.h"
 #include "Palettes.h"
+#include "PeakData.h"
 
 #pragma once
 
@@ -28,6 +29,13 @@ const size_t SAMPLING_FREQUENCY = 25000;
 volatile unsigned long g_cSamples = 0;	  // Total number of samples successfully collected
 volatile unsigned long g_cInterrupts = 0; // Total number of interrupts that have occured
 volatile unsigned long g_cIRQMisses = 0;  // Number of times buffer wasn't lockable by IRQ
+
+volatile float gLogScale = 2.0f;	 // How exponential the peaks are made to be
+volatile float gBrightness = 64;	 // LED matrix brightness, 0-255
+volatile float gPeakDecay = 0.0;	 // Peak decay for white line on top of spectrum bars
+volatile float gColorSpeed = 128.0f; // How fast the color palette rotates (smaller is faster, it's a time divisor)
+volatile float gVU = 0;				 // Instantaneous read of VU value
+volatile int giColorScheme = 0;		 // Global color scheme (index into table of palettes)
 
 volatile float gScaler = 0.0f; // Instanteous read of LED display vertical scaling
 
@@ -472,4 +480,4 @@ void IRAM_ATTR SoundAnalyzer::OnTimer()
 
 // The globlal instance of the SoundAnalyzer
 
-SoundAnalyzer g_SoundAnalyzer(INPUT_PIN);
+SoundAnalyzer gAnalyzer(INPUT_PIN);

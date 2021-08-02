@@ -7,6 +7,12 @@
 #define LOOP_DEBUG_PIN 33
 
 /////////////
+/// Bluetooth
+/////////////
+
+#define DEBUG_BLE_COMM 1
+
+/////////////
 /// Dave's remainings
 /////////////
 

@@ -1,6 +1,9 @@
 #pragma once
 
 #include <FastLED.h>
+#include <Arduino.h>
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -88,4 +91,25 @@ double noteFreq(note_t note, uint8_t octave)
     double noteFreq = (double)noteFrequencyBase[note] / (double)(1 << (8 - octave));
 
     return noteFreq;
+}
+
+std::string ToString(int n)
+{
+    std::ostringstream stm;
+    stm << n;
+    return stm.str();
+}
+
+// Function that gets current epoch time
+unsigned long getTime()
+{
+    time_t now;
+    struct tm timeinfo;
+    if (!getLocalTime(&timeinfo))
+    {
+        //Serial.println("Failed to obtain time");
+        return (0);
+    }
+    time(&now);
+    return now;
 }

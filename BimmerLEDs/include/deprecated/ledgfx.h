@@ -1,30 +1,5 @@
 #pragma once
 
-#define FASTLED_INTERNAL
-
-#include <FastLED.h>
-#include <pixeltypes.h> // Handy color and hue stuff
-
-#include "ledgfx_dave.h"
-#include "StripEffect.h"
-#include "Utilities.h"
-#include "StripSection.h"
-#include "Strips.h"
-
-using namespace std;
-
-int g_Brightness = 30;  // 0-255 LED brightness scale
-int g_PowerLimit = 3000; // 900mW Power Limit
-
-// BouncingBallEffect bounce(2);
-// CometEffect comet;
-// FireEffect fire(NUM_LEDS);
-// MarqueeEffect marquee;
-// RainbowEffect rainbow;
-// TwinkleEffect twinkle;
-
-LEDGFX manager;
-
 void UNUSED()
 {
 

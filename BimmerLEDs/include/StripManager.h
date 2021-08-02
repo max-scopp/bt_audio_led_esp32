@@ -1,10 +1,15 @@
 #pragma once
 
+#define FASTLED_INTERNAL
+
+#include <Arduino.h>
 #include <FastLED.h>
 #include <cstdint>
 #include <functional>
 #include <algorithm>
 #include <vector>
+#include <string>
+#include <sstream>
 
 #include "Utilities.h"
 #include "Constants.h"
@@ -15,17 +20,11 @@
 #include "Easing.h"
 
 #include "StripEffect.h"
-#include "ledgfx_dave.h"
 #include "PeakData.h"
+// #include "ledgfx_dave.h"
 
-volatile float gLogScale = 2.0f;     // How exponential the peaks are made to be
-volatile float gBrightness = 64;     // LED matrix brightness, 0-255
-volatile float gPeakDecay = 0.0;     // Peak decay for white line on top of spectrum bars
-volatile float gColorSpeed = 128.0f; // How fast the color palette rotates (smaller is faster, it's a time divisor)
-volatile float gVU = 0;              // Instantaneous read of VU value
-volatile int giColorScheme = 0;      // Global color scheme (index into table of palettes)
-
-class LEDGFX
+// TODO: Rename to StripManager
+class StripManager
 {
 protected:
 private:
@@ -399,3 +398,5 @@ public:
         }
     }
 };
+
+StripManager manager;

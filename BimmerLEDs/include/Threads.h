@@ -1,6 +1,6 @@
-#include "LEDGFX.h"
-#include "PeakData.h"
 #include "SoundAnalyzer.h" // Measures and processes the incoming audio
+#include "BluetoothService.h"
+#include "StripManager.h"
 
 #include "Constants.h"
 
@@ -20,8 +20,10 @@ TaskHandle_t webTask; // Not used (yet)
 volatile size_t gFPS = 0; // FFT frames per second
 volatile size_t mFPS = 0; // Matrix frames per second
 
-// TODO: Move this somewhere else
-SoundAnalyzer gAnalyzer(INPUT_PIN);
+int g_Brightness = 30;   // 0-255 LED brightness scale
+int g_PowerLimit = 3000; // 900mW Power Limit
+
+/// ==================================================================================
 
 // LEDGFXLoop
 //
@@ -77,11 +79,11 @@ void StartupSoundLoop(void *)
 
 void BluetoothLoop(void *pvParameters)
 {
-    vTaskDelete(bluetoothTask);
-    // Serial.println("Init BLE...");
+    Serial.println("Init BLE Service...");
+    bluetooth.setup();
 
     for (;;)
     {
-        // WIP
+        bluetooth.loop();
     }
 }
