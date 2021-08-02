@@ -24,8 +24,9 @@ on all areas of your car with the right orientation, length and shit.
 
 ### TODOs Bluetooth (will likely be moved)
 
-- [ ] Basic BLE connectivity
-- [ ] Create an protocol for the app
+- [x] Basic BLE connectivity
+- [-] Create an protocol for the app (WIP)
+  - [ ] jsonb or stick with short json's?
 
 _(probably not be done, but really cool if I finally understand shit)_
 
