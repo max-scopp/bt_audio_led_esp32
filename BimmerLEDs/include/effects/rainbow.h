@@ -4,19 +4,40 @@
 class RainbowEffect : public StripEffect
 {
 public:
-    bool uniqueSections = false;
-    bool fixAlignment = true;
+    bool doRotate = true;
 
-    Interpolation interpolation = Interpolation::Linear;
+    float hueDensity = 5;
+    float hueDelta = 12;
 
-    vector<CRGB> draw(int l, int t, int as)
+    StripBehaviour getBehaviour()
+    {
+        StripBehaviour b;
+
+        return b;
+    }
+
+    void writeConfiguration(JsonObject o)
+    {
+        o["r"] = doRotate;
+        o["dens"] = hueDensity;
+        o["delta"] = hueDelta;
+    }
+
+    void updateConfiguration(JsonObject updates)
+    {
+        doRotate = (bool)(updates.containsKey("r") ? updates["r"] : doRotate);
+        hueDensity = (float)(updates.containsKey("dens") ? updates["dens"] : hueDensity);
+        hueDelta = (float)(updates.containsKey("delta") ? updates["delta"] : hueDelta);
+
+        Serial.printf("doRotate: %d \n", doRotate);
+        Serial.printf("hueDensity: %d \n", hueDensity);
+        Serial.printf("hueDelta: %d \n", hueDelta);
+    }
+
+    vector<CRGB>
+    draw(int l, int t, int as)
     {
         vector<CRGB> r(as);
-
-        static bool doRotate = true;
-
-        static float hueDensity = 5;
-        static float hueDelta = 12;
 
         for (int iPos = 0; iPos < as; iPos++)
         {

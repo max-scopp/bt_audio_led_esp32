@@ -1,6 +1,9 @@
 #include "SoundAnalyzer.h" // Measures and processes the incoming audio
-#include "BluetoothService.h"
+
 #include "StripManager.h"
+#include "Effects.h"
+
+#include "BluetoothService.h"
 
 #include "Constants.h"
 

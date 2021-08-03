@@ -1,6 +1,7 @@
 #pragma once
 
 #include <FastLED.h>
+#include <ArduinoJson.h>
 #include <Arduino.h>
 #include <string>
 #include <sstream>
@@ -100,16 +101,17 @@ std::string ToString(int n)
     return stm.str();
 }
 
-// Function that gets current epoch time
-unsigned long getTime()
+void jsonMergeShallow(JsonObject dest, JsonObjectConst src)
 {
-    time_t now;
-    struct tm timeinfo;
-    if (!getLocalTime(&timeinfo))
+    for (auto kvp : src)
     {
-        //Serial.println("Failed to obtain time");
-        return (0);
+        dest[kvp.key()] = kvp.value();
     }
-    time(&now);
-    return now;
+}
+
+JsonVariant jsonNull()
+{
+    JsonVariant v;
+    v.set(nullptr);
+    return v;
 }

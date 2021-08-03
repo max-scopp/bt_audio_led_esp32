@@ -9,16 +9,6 @@
 //#include "LEDMatrixGFX.h"
 // #include "SpectrumDisplay.h" // Draws the bars on the LEDs
 
-#include "effects/debug.h"
-#include "effects/sound_debug.h"
-#include "effects/sound_vu_debug.h"
-#include "effects/rainbow.h"
-// #include "effects/bounce.h"
-// #include "effects/comet.h"
-// #include "effects/fire.h"
-// #include "effects/marquee.h"
-// #include "effects/twinkle.h"
-
 using namespace std;
 
 void printBoardInfo()
@@ -132,7 +122,7 @@ void setup()
 {
   // delay(500); // half a second of silence is a virtue
 
-  Serial.begin(115200);
+  Serial.begin(921600);
 
   printProgramHeader();
   printBoardInfo();
@@ -151,7 +141,7 @@ void setup()
   setupLazyStartupSound();
   Serial.println("READY");
 
-  manager.g_EffectPointer = new RainbowEffect();
+  // manager.g_EffectPointer = new RainbowEffect();
   // manager.g_EffectPointer = new SoundDebugEffect();
 }
 

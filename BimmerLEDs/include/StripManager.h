@@ -13,17 +13,19 @@
 
 #include "Utilities.h"
 #include "Constants.h"
+#include "Easing.h"
 
 #include "Strip.h"
 #include "StripSection.h"
 #include "Locations.h"
-#include "Easing.h"
 
-#include "StripEffect.h"
 #include "PeakData.h"
+#include "StripEffect.h"
+
 // #include "ledgfx_dave.h"
 
-// TODO: Rename to StripManager
+using namespace std;
+
 class StripManager
 {
 protected:
@@ -211,9 +213,10 @@ public:
             }
 
             int prefferedArraySize = computePrefferedArraySizeForEffectDraw();
+            StripBehaviour behaviour = g_EffectPointer->getBehaviour();
 
 #if DEBUG_TO_SERIAL
-            if (!g_EffectPointer->uniqueSections)
+            if (!behaviour.uniqueSections)
             {
 
                 Serial.println("g_EffectPointer->createsUniqueSections() OPTION IS IGNORED; NOT IMPLEMENTED");
@@ -227,7 +230,7 @@ public:
                          StripSection Position = *sm.Positions[i];
                          vector<CRGB> r = g_EffectPointer->draw(Position.Location, millis(), prefferedArraySize);
 
-                         if (g_EffectPointer->fixAlignment)
+                         if (behaviour.fixAlignment)
                          {
                              applyAlignment(Position.Location, &r);
                          }
@@ -254,7 +257,7 @@ public:
                              int rINext = rI + 1 >= rS ? rI : rI + 1;
                              int rIPrev = rI - 1 < 0 ? 0 : rI - 1;
 
-                             Interpolation interpolation = g_EffectPointer->interpolation;
+                             Interpolation interpolation = behaviour.interpolation;
 
 #if DEBUG_TO_SERIAL
                              Serial.printf("map %d to %d (%f / %f) ", i, rI, overlay, perc);
@@ -353,6 +356,22 @@ public:
         FastLED.show();
     }
 
+    void setBrightness(float brightness, bool smooth = false)
+    {
+        Brightness = brightness;
+        FastLED.setBrightness(Brightness);
+
+        if (smooth)
+        {
+            throw runtime_error("Smooth is not supported yet");
+        }
+    }
+
+    float getBrightness()
+    {
+        return Brightness;
+    }
+
     // Display::SetPeaks
     //
     // Allows the analyzer to call and set the peak data for all of the bands at once.
@@ -388,13 +407,13 @@ public:
         float seconds = (millis() - lastDecay) / (float)MS_PER_SECOND;
         lastDecay = millis();
 
-        float decayAmount1 = std::max(0.0f, seconds * gPeakDecay);
+        float decayAmount1 = max(0.0f, seconds * gPeakDecay);
         float decayAmount2 = seconds * PEAK2_DECAY_PER_SECOND;
 
         for (int iBand = 0; iBand < BAND_COUNT; iBand++)
         {
-            _peak1Decay[iBand] -= std::min(decayAmount1, _peak1Decay[iBand]);
-            _peak2Decay[iBand] -= std::min(decayAmount2, _peak2Decay[iBand]);
+            _peak1Decay[iBand] -= min(decayAmount1, _peak1Decay[iBand]);
+            _peak2Decay[iBand] -= min(decayAmount2, _peak2Decay[iBand]);
         }
     }
 };

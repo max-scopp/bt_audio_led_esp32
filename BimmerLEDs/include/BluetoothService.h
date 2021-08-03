@@ -7,6 +7,7 @@
 #include <ArduinoJson.h>
 
 #include "Operations.h"
+
 using namespace std;
 
 BLEServer *pServer = NULL;
@@ -44,9 +45,38 @@ void setValue(T value)
 
 void sendJson(StaticJsonDocument<255> doc)
 {
-    std::string output;
+    string output;
     serializeJson(doc, output);
     setValue(output);
+}
+
+void sendMessage(string message, bool isProblem = false)
+{
+    StaticJsonDocument<255> responseDoc;
+
+    try
+    {
+        short operation = -1;
+
+        responseDoc[0] = operation;
+
+        JsonObject responsePayload = responseDoc.createNestedObject();
+        JsonObject responseMeta = responseDoc.createNestedObject();
+
+        BLE_OP_Message(message, responsePayload, responseMeta);
+
+        if (isProblem)
+        {
+            responseMeta["__EX__"] = true;
+        }
+
+        sendJson(responseDoc);
+    }
+    catch (const exception &e)
+    {
+        Serial.printf(e.what());
+        Serial.println();
+    }
 }
 
 class ServerCallbacks : public BLEServerCallbacks
@@ -69,7 +99,7 @@ class ClientCallbacks : public BLECharacteristicCallbacks
 public:
     void onWrite(BLECharacteristic *pCharacteristic)
     {
-        std::string value = pCharacteristic->getValue();
+        string value = pCharacteristic->getValue();
 
 #if DEBUG_BLE_COMM
         Serial.print("< ");
@@ -95,26 +125,29 @@ public:
 
     void handlePacket(StaticJsonDocument<255> cmds)
     {
-        StaticJsonDocument<255> doc;
+        StaticJsonDocument<255> responseDoc;
 
         try
         {
             short operation = cmds[0].as<short>();
 
-            switch (operation)
-            {
-            case 0:
-            {
-                doc = ping(cmds, doc);
-                break;
-            }
-            }
+            responseDoc[0] = operation;
 
-            sendJson(doc);
+            JsonObject responsePayload = responseDoc.createNestedObject();
+            JsonObject responseMeta = cmds[2].as<JsonObject>();
+
+            JsonVariant requestPayload = cmds[1];
+
+            bool responds = BLE_handleOperation(operation, requestPayload, responsePayload, responseMeta);
+
+            if (responds)
+            {
+                sendJson(responseDoc);
+            }
         }
-        catch (const std::exception &e)
+        catch (const exception &e)
         {
-            Serial.printf(e.what());
+            sendMessage(e.what(), true);
         }
     }
 };
@@ -131,6 +164,11 @@ public:
     void setValue(T value)
     {
         setValue(value);
+    }
+
+    void sendMessage(string message)
+    {
+        sendMessage(message);
     }
 
     void setup()
