@@ -2,9 +2,9 @@
 
 The protocol is purposefully made easy to understand, human-readable, yet trying to leave the smallest fingerprint as possible.
 
-Do not exceed an json length of 255 bytes - it may work, but it will not be reliable!
+Do not exceed an json length of 182 bytes. This is the maximum for iPhone.
 
-_The 255 bytes packet limit may be raised in the future, but don't bet on it._
+If you want to send more than that, you need to sent multiple packets. THIS IS NOT SUPPORTED YET.
 
 ## Send a packet
 
