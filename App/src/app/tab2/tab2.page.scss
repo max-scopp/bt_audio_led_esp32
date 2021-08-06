@@ -1,0 +1,20 @@
+%adjust-rgb-base {
+  ion-icon {
+    margin-right: 20px;
+  }
+}
+
+.adjust-rgb {
+  &-red {
+    @extend %adjust-rgb-base;
+    color: rgb(255, 59, 45);
+  }
+  &-green {
+    @extend %adjust-rgb-base;
+    color: rgb(0, 204, 61);
+  }
+  &-blue {
+    @extend %adjust-rgb-base;
+    color: rgb(0, 119, 255);
+  }
+}

@@ -1,0 +1,66 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons>
+      <ion-button
+        color="secondary"
+        [disabled]="isRefreshing"
+        (click)="refresh()"
+      >
+        <ion-icon *ngIf="!isRefreshing" name="refresh"></ion-icon>
+        <ion-spinner class="spinner-small" *ngIf="isRefreshing"></ion-spinner>
+      </ion-button>
+    </ion-buttons>
+    <ion-title> Setup LEDs </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">LEDs</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <ion-list>
+      <ion-list-header>Adjust Brightness</ion-list-header>
+      <ion-item>
+        <ion-range
+          min="0"
+          max="255"
+          step="1"
+          (ionChange)="onBrightnessChange($event)"
+          [value]="state?.b"
+        >
+          <ion-icon size="small" slot="start" name="sunny"></ion-icon>
+          <ion-icon slot="end" name="sunny"></ion-icon>
+        </ion-range>
+      </ion-item>
+      <ion-list-header>Effect</ion-list-header>
+      <ion-item routerLink="." (click)="showEffectsPopover($event)">
+        <ion-label>{{state?.e || "No active effect"}}</ion-label>
+      </ion-item>
+      <ion-list-header>Configuration</ion-list-header>
+
+      <ion-item
+        *ngFor="let key of configKeys"
+        [ngSwitch]="typeOfKey(key)"
+        (ionChange)="onKeyChange(key, $event)"
+      >
+        <ion-text slot="start"> {{key}} </ion-text>
+
+        <ion-toggle *ngSwitchCase="'boolean'" [checked]="valueForKey(key)">
+        </ion-toggle>
+
+        <ion-range
+          *ngSwitchCase="'number'"
+          min="0"
+          max="255"
+          [value]="valueForKey(key)"
+        >
+          <!-- <ion-icon slot="start" name="color-filter"></ion-icon> -->
+        </ion-range>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-content>

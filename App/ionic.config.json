@@ -1,0 +1,8 @@
+{
+  "name": "BimmerLED",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "a7ee7653"
+}

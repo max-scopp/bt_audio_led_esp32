@@ -1,8 +1,4 @@
-# [Check out the app!](https://github.com/max-scopp/bimmer-led)
-
-# LEDs
-
-This _should_ mainly do the led displaying stuff.
+# LEDs n Stuff
 
 Basically, you setup where and how your strips are done, then, use a somewhat simple
 class to define your effect and with a few knobs, the effect magically works

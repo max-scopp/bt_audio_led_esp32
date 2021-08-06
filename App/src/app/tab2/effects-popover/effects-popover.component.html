@@ -1,0 +1,13 @@
+<ion-spinner *ngIf="isLoading"> </ion-spinner>
+
+<ion-list *ngIf="!isLoading">
+  <ion-item
+    (click)="activateEffect(item)"
+    button
+    [detail]="false"
+    lines="full"
+    *ngFor="let item of items"
+  >
+    {{ item }}</ion-item
+  >
+</ion-list>

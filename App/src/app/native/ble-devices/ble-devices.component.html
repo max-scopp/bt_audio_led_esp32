@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Find your Controller</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismissModal()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-fab horizontal="center" vertical="bottom">
+    <ion-fab-button
+      color="light"
+      (click)="toggleScan()"
+      [activated]="isScanning"
+    >
+      <ion-icon name="search"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ion-progress-bar
+    [class.disabled]="!isScanning"
+    type="indeterminate"
+  ></ion-progress-bar>
+
+  <ion-list>
+    <ion-item disabled *ngIf="!deviceList" lines="full">
+      <ion-label>No devices found</ion-label>
+    </ion-item>
+    <ion-item
+      ion-item
+      *ngFor="let entry of devices | keyvalue; trackBy: trackBy"
+      [class.item-invalidated]="entry.value.invalidated"
+      lines="full"
+      button
+      (click)="onSelectDevice(entry.value)"
+    >
+      <ion-label>
+        {{ entry.value.name || "Unnamed" }}
+        <ion-text color="medium">{{ entry.value.address }}</ion-text>
+      </ion-label>
+      <ion-badge
+        color="light"
+        slot="end"
+        [style.--color]="getCssVarForRssi(entry.value)"
+      >
+        {{ entry.value.invalidated ? "no" : entry.value.rssi }} dBm
+
+        <ion-icon
+          [name]="entry.value.isConnected ? 'checkmark-done' : 'checkmark'"
+          *ngIf="entry.value.isBonded || entry.value.isConnected"
+        ></ion-icon>
+      </ion-badge>
+    </ion-item>
+  </ion-list>
+</ion-content>

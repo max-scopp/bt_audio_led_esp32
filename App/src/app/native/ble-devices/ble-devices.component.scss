@@ -1,0 +1,25 @@
+:host {
+  --device-bonded: #0083fd;
+  --rssi-perfect: var(--ion-color-success-tint);
+  --rssi-good: var(--ion-color-success-shade);
+  --rssi-okay: inherit;
+  --rssi-bad: var(--ion-color-warning-shade);
+  --rssi-horrible: var(--ion-color-danger);
+}
+
+.item-invalidated {
+  opacity: 0.5;
+}
+
+ion-progress-bar.disabled {
+  visibility: hidden;
+}
+
+ion-badge {
+  transition: color ease-in-out 400ms;
+  color: var(--color);
+
+  ion-icon {
+    vertical-align: bottom;
+  }
+}

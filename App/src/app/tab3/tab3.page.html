@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> Event Log </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-virtual-scroll
+      [items]="commandHistory"
+      approxItemHeight="22px"
+      [itemHeight]="itemHeightFn"
+      [trackBy]="trackByFn"
+    >
+      <ion-item
+        *virtualItem="let item;let index = index; let itemBounds = bounds;"
+        (click)="showCompleteEntry(index)"
+      >
+        <ion-text class="log-entry" [color]="!item.valid && 'danger'">
+          <ion-icon *ngIf="!item.sent" name="chevron-back-outline"></ion-icon>
+          <ion-icon *ngIf="item.sent" name="chevron-forward-outline"></ion-icon>
+          {{ item.value | json }}
+        </ion-text>
+      </ion-item>
+    </ion-virtual-scroll>
+  </ion-list>
+</ion-content>
