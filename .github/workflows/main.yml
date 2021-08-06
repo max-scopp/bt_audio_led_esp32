@@ -28,4 +28,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade platformio
     - name: Run PlatformIO
-      run: PLATFORMIO_BUILD_DIR="./bin"; pio run
+      run: |
+        cd Arduino
+        PLATFORMIO_BUILD_DIR="./bin"
+        pio run
