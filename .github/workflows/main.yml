@@ -39,6 +39,10 @@ jobs:
         cd Arduino
         PLATFORMIO_BUILD_DIR="./bin"
         pio run
+    - name: Zip for Release
+      run: |
+        cd Arduino/bin/
+        tar -cvzf controller.tar.gz */firmware.bin
 
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
@@ -48,4 +52,4 @@ jobs:
         files: |
           LICENSE.txt
           Arduino/CHANGELOG.txt
-          Arduino/bin/
+          Arduino/bin/controller.tar.gz
