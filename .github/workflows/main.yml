@@ -1,11 +1,16 @@
-name: PlatformIO CI
+name: Controller & App CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - "main"
+    tags:
+      - "*/v*"
 
 jobs:
-  build:
-
+  build-controller:
     runs-on: ubuntu-latest
+    if: contains(github.ref, 'controller/')
 
     steps:
     - uses: actions/checkout@v2
@@ -32,3 +37,12 @@ jobs:
         cd Arduino
         PLATFORMIO_BUILD_DIR="./bin"
         pio run
+
+    - uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: true
+        files: |
+          LICENSE.txt
+          Arduino/CHANGELOG.txt
+          Arduino/bin/
