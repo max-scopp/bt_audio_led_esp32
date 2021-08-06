@@ -26,6 +26,11 @@
                 "output": "assets"
               },
               {
+                "glob": "**/*",
+                "input": "public",
+                "output": "./"
+              },
+              {
                 "glob": "**/*.svg",
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
@@ -103,7 +108,6 @@
             "styles": [],
             "scripts": [],
             "assets": [
-              "public",
               {
                 "glob": "favicon.ico",
                 "input": "src/",
