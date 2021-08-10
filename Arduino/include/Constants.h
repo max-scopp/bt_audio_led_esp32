@@ -3,8 +3,8 @@
 /// Common
 /////////////
 
-#define BUZZER_PIN 27
-#define LOOP_DEBUG_PIN 33
+#define BUZZER_PIN 26
+#define LOOP_DEBUG_PIN 27
 
 /////////////
 /// Bluetooth

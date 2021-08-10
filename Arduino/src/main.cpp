@@ -120,12 +120,14 @@ void setupLazyStartupSound()
 
 void setup()
 {
-  // delay(500); // half a second of silence is a virtue
+  // delay(2000); // half a second of silence is a virtue
 
   Serial.begin(921600);
 
   printProgramHeader();
   printBoardInfo();
+
+  setupLazyStartupSound();
 
   pinMode(BUZZER_PIN, OUTPUT);
 
@@ -138,11 +140,12 @@ void setup()
   // setupAudioSampler();
   // Serial.println("");
 
-  setupLazyStartupSound();
   Serial.println("READY");
 
-  // manager.g_EffectPointer = new RainbowEffect();
+  manager.g_EffectPointer = new RainbowEffect();
   // manager.g_EffectPointer = new SoundDebugEffect();
+
+  startupFinished();
 }
 
 void loop()

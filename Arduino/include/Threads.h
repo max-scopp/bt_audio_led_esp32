@@ -59,22 +59,32 @@ void SamplerLoop(void *)
     }
 }
 
+int channel = 0;
+
 // StartupSoundLoop
 //
 // Temporary Thread to make a startup sound for better debug purposes.
 void StartupSoundLoop(void *)
 {
     int freq = 2000;
-    int channel = 0;
     int resolution = 8;
 
     ledcSetup(channel, freq, resolution);
     ledcAttachPin(BUZZER_PIN, channel);
 
-    ledcWriteNote(channel, NOTE_C, 6);
-    delay(100);
+    ledcWriteNote(channel, NOTE_F, 6);
+    delay(300);
+    ledcWriteTone(channel, 0);
+
+    for (;;)
+    {
+    }
+}
+
+void startupFinished()
+{
     ledcWriteNote(channel, NOTE_C, 7);
-    delay(450);
+    delay(150);
 
     ledcDetachPin(BUZZER_PIN);
     vTaskDelete(startupSoundTask);
@@ -83,10 +93,10 @@ void StartupSoundLoop(void *)
 void BluetoothLoop(void *pvParameters)
 {
     Serial.println("Init BLE Service...");
-    bluetooth.setup();
+    BluetoothService::setup();
 
     for (;;)
     {
-        bluetooth.loop();
+        BluetoothService::loop();
     }
 }
