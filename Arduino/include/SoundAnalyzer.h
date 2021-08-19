@@ -20,7 +20,7 @@
 #pragma once
 
 const size_t MAX_SAMPLES = 512;
-const size_t SAMPLING_FREQUENCY = 25000;
+const size_t SAMPLING_FREQUENCY = 32000;
 
 #define PRINT_PEAKS 0
 #define SHOW_SAMPLE_TIMING 0
@@ -446,7 +446,7 @@ public:
 				portENABLE_INTERRUPTS();
 				break;
 			}
-			if (_bufferB._cSamples == MAX_SAMPLES)
+			else if (_bufferB._cSamples == MAX_SAMPLES)
 			{
 				portDISABLE_INTERRUPTS();
 				// ScanInputs();
@@ -455,6 +455,10 @@ public:
 				pBackBuffer = &_bufferB;
 				portENABLE_INTERRUPTS();
 				break;
+			}
+			else
+			{
+				throw runtime_error("Unable to Sample, internal state incorrect.");
 			}
 		}
 

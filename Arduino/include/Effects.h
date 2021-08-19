@@ -7,20 +7,20 @@
 // #include "effects/bounce.h"
 // #include "effects/comet.h"
 // #include "effects/fire.h"
-// #include "effects/marquee.h"
+#include "effects/marquee.h"
 // #include "effects/twinkle.h"
 
 using namespace std;
 
 std::map<string, StripEffect *> effects = {
-    // {"debug", new DebugEffect()},
-    // {"debug:sound", new SoundDebugEffect()},
-    // {"debug:sound-vu", new SoundVUDebugEffect()},
+    {"debug", new DebugEffect()},
+    {"debug:sound", new SoundDebugEffect()},
+    {"debug:sound-vu", new SoundVUDebugEffect()},
     {"rainbow", new RainbowEffect()},
+    {"marquee", new MarqueeEffect()},
     // {"bouncing-ball", new BouncingBallEffect()},
     // {"comet", new CometEffect()},
     // {"fire", new FireEffect()},
-    // {"marquee", new MarqueeEffect()},
     // {"twinkle", new TwinkleEffect()},
 };
 

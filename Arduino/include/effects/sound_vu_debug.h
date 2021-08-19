@@ -8,10 +8,20 @@
 class SoundVUDebugEffect : public StripEffect
 {
 public:
-    bool uniqueSections = false;
-    bool fixAlignment = true;
+    StripBehaviour getBehaviour()
+    {
+        StripBehaviour b;
 
-    Interpolation interpolation = Interpolation::Linear;
+        return b;
+    }
+
+    void writeConfiguration(JsonObject o)
+    {
+    }
+
+    void updateConfiguration(JsonObject updates)
+    {
+    }
 
     vector<CRGB> draw(int l, int t, int as)
     {

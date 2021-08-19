@@ -26,20 +26,37 @@ protected:
 public:
     MarqueeEffect() : j(0), scroll(0) {}
 
-    void DrawMarquee()
+    StripBehaviour getBehaviour()
     {
+        StripBehaviour b;
+
+        return b;
+    }
+
+    void writeConfiguration(JsonObject o)
+    {
+    }
+
+    void updateConfiguration(JsonObject updates)
+    {
+    }
+
+    void DrawMarquee(vector<CRGB> leds)
+    {
+        int num_leds = leds.size();
+
         j += 4;
         byte k = j;
 
-        // Roughly equivalent to fill_rainbow(g_LEDs, NUM_LEDS, j, 8);
+        // Roughly equivalent to fill_rainbow(g_LEDs, num_leds, j, 8);
 
         CRGB c;
-        for (int i = 0; i < NUM_LEDS; i++)
+        for (int i = 0; i < num_leds; i++)
             FastLED.leds()[i] = c.setHue(k += 8);
 
         scroll++;
 
-        for (int i = scroll % 5; i < NUM_LEDS - 1; i += 5)
+        for (int i = scroll % 5; i < num_leds - 1; i += 5)
         {
             FastLED.leds()[i] = CRGB::Black;
             FastLED.leds()[i + 1] = CRGB::Black;
@@ -48,43 +65,48 @@ public:
         delay(50);
     }
 
-    void DrawMarqueeMirrored()
+    void DrawMarqueeMirrored(vector<CRGB> leds)
     {
+        int num_leds = leds.size();
+
         j += 4;
         byte k = j;
 
-        // Roughly equivalent to fill_rainbow(g_LEDs, NUM_LEDS, j, 8);
+        // Roughly equivalent to fill_rainbow(g_LEDs, num_leds, j, 8);
 
         CRGB c;
-        for (int i = 0; i < (NUM_LEDS + 1) / 2; i++)
+        for (int i = 0; i < (num_leds + 1) / 2; i++)
         {
             FastLED.leds()[i] = c.setHue(k);
-            FastLED.leds()[NUM_LEDS - 1 - i] = c.setHue(k);
+            FastLED.leds()[num_leds - 1 - i] = c.setHue(k);
             k += 8;
         }
 
         scroll++;
 
-        for (int i = scroll % 5; i < NUM_LEDS / 2; i += 5)
+        for (int i = scroll % 5; i < num_leds / 2; i += 5)
         {
             FastLED.leds()[i] = CRGB::Black;
-            FastLED.leds()[NUM_LEDS - 1 - i] = CRGB::Black;
+            FastLED.leds()[num_leds - 1 - i] = CRGB::Black;
         }
 
         delay(50);
     }
 
-    void draw(StripSection controller, int t)
+    vector<CRGB> draw(int l, int t, int as)
     {
         static bool mirrored = false;
+        vector<CRGB> leds(as);
 
         if (mirrored)
         {
-            DrawMarqueeMirrored();
+            DrawMarqueeMirrored(leds);
         }
         else
         {
-            DrawMarquee();
+            DrawMarquee(leds);
         }
+
+        return leds;
     }
 };

@@ -6,10 +6,21 @@
 class SoundDebugEffect : public StripEffect
 {
 public:
-    bool uniqueSections = false;
-    bool fixAlignment = true;
 
-    Interpolation interpolation = Interpolation::Linear;
+    StripBehaviour getBehaviour()
+    { 
+        StripBehaviour b;
+
+        return b;
+    }
+
+    void writeConfiguration(JsonObject o)
+    {
+    }
+
+    void updateConfiguration(JsonObject updates)
+    {
+    }
 
     vector<CRGB> draw(int l, int t, int as)
     {

@@ -3,6 +3,8 @@
 #include <arduinoFFT.h> // FFT code for SoundAnalzyer
 
 #include "Constants.h"
+#include "Globals.h"
+
 #include "Utilities.h"
 
 #include "Threads.h"
@@ -34,7 +36,8 @@ void setupLedStrip()
   Serial.printf("Initializing led task... ");
 
   const int pinned_to_core = 1;
-  const int priority = 5;
+  const int priority = 10;
+
   xTaskCreatePinnedToCore(
       LEDGFXLoop,
       "Strip Animation Loop",
@@ -72,7 +75,7 @@ void setupAudioSampler()
   Serial.printf("Initializing sampler task... ");
 
   const int pinned_to_core = 0;
-  const int priority = 5;
+  const int priority = 10;
 
   xTaskCreatePinnedToCore(
       SamplerLoop,
@@ -83,10 +86,6 @@ void setupAudioSampler()
       pinned_to_core);
 
   Serial.printf("running on core %d with priority %d. \n", pinned_to_core, priority);
-
-  // Serial.println("Audio Sampler Launching...");
-  // Serial.printf("  FFT Size: %d bytes\n", MAX_SAMPLES);
-  // g_SoundAnalyzer.StartInterrupts();
 }
 
 void setupBluetoothConnectivity()
@@ -94,7 +93,7 @@ void setupBluetoothConnectivity()
   Serial.println("Setting up bluetooth...");
 
   const int pinned_to_core = 1;
-  const int priority = 3;
+  const int priority = 5;
 
   xTaskCreatePinnedToCore(
       BluetoothLoop,
@@ -121,34 +120,31 @@ void setupLazyStartupSound()
 void setup()
 {
   // delay(2000); // half a second of silence is a virtue
-
-  Serial.begin(921600);
+  Serial.begin(115200);
 
   printProgramHeader();
   printBoardInfo();
 
   setupLazyStartupSound();
-
-  pinMode(BUZZER_PIN, OUTPUT);
+  Serial.println("");
 
   setupLedStrip();
+  Serial.println("");
+
+  setupAudioSampler();
   Serial.println("");
 
   setupBluetoothConnectivity();
   Serial.println("");
 
-  // setupAudioSampler();
-  // Serial.println("");
-
   Serial.println("READY");
 
-  manager.g_EffectPointer = new RainbowEffect();
-  // manager.g_EffectPointer = new SoundDebugEffect();
+  // manager.g_EffectPointer = new RainbowEffect();
+  manager.g_EffectPointer = new SoundDebugEffect();
 
-  startupFinished();
+  startupFinished = true;
 }
 
 void loop()
 {
-  // Not in use
 }

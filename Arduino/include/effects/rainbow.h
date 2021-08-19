@@ -34,8 +34,7 @@ public:
         Serial.printf("hueDelta: %d \n", hueDelta);
     }
 
-    vector<CRGB>
-    draw(int l, int t, int as)
+    vector<CRGB> draw(int l, int t, int as)
     {
         vector<CRGB> r(as);
 

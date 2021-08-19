@@ -22,7 +22,7 @@ uint32_t value = 0;
 static BLEUUID serviceUUID("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
 static BLEUUID charUUID("beb5483e-36e1-4688-b7f5-ea07361b26a8");
 
-struct BluetoothService
+struct BluetoothLE
 {
     static void sendJson(DynamicJsonDocument doc)
     {
@@ -146,18 +146,18 @@ struct BluetoothService
 
                     if (responds)
                     {
-                        BluetoothService::sendJson(responseDoc);
+                        BluetoothLE::sendJson(responseDoc);
                     }
                 }
                 catch (const exception &e)
                 {
-                    BluetoothService::sendMessage(e.what(), true);
+                    BluetoothLE::sendMessage(e.what(), true);
                 }
             }
         };
 
         // Create the BLE Device
-        BLEDevice::init("Max's E46 BALE Service");
+        BLEDevice::init(DEFAULT_DEVICE_NAME);
 
         // Create the BLE Server
         pServer = BLEDevice::createServer();

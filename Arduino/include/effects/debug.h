@@ -6,10 +6,23 @@
 class DebugEffect : public StripEffect
 {
 public:
-    bool uniqueSections = false;
-    bool fixAlignment = true;
+    StripBehaviour getBehaviour()
+    {
+        StripBehaviour b;
 
-    Interpolation interpolation = Interpolation::Linear;
+        b.uniqueSections = true;
+        b.interpolation = Interpolation::None;
+
+        return b;
+    }
+
+    void writeConfiguration(JsonObject o)
+    {
+    }
+
+    void updateConfiguration(JsonObject updates)
+    {
+    }
 
     vector<CRGB> draw(int l, int t, int as)
     {
@@ -28,9 +41,16 @@ public:
         Serial.println();
 #endif
 
-        vector<CRGB> r(2);
-        r[0] = CRGB::Magenta;
-        r[1] = CRGB::Lime;
+        vector<CRGB> r(as);
+
+        for (size_t i = 0; i < as; i++)
+        {
+            r[i] = i % 2 ? CRGB::Magenta : CRGB::Lime;
+        }
+
+        r[0] = CRGB::Red;
+        r[as - 1] = CRGB::Blue;
+
         return r;
     }
 };

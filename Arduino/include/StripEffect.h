@@ -24,6 +24,7 @@ public:
      * You get a location which is a bit shifted value of the enum Location and the current millis() if you want to depend on those variables.
      * You must return any size of array to actually draw.
      * You get a preffered size as third argument.
+     * args: location, time, (preffered) array size 
      */
     virtual vector<CRGB> draw(int l, int t, int as) = 0;
 

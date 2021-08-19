@@ -112,19 +112,13 @@ public:
     {
         static const int RUN_EVERY = TARGET_FPS > 0 ? MS_PER_SECOND / TARGET_FPS : 0;
         static unsigned long ledsLastFrame = 0;
-        volatile size_t gLedsFPS = 0;
 
         EVERY_N_MILLISECONDS(RUN_EVERY)
         {
-            gLedsFPS = FPS(ledsLastFrame, millis());
+            sFPS = FPS(ledsLastFrame, millis());
             ledsLastFrame = millis();
 
-#if SHOW_FPS
-            // TODO: Make fancy Serial.printf
-            Serial.printf("FPS: %d\r", gLedsFPS);
-#endif
-
-            FastLED.clear();
+            // FastLED.clear();
 
             DecayPeaks();
 
@@ -175,12 +169,22 @@ public:
         return ssfl;
     }
 
-    int computePrefferedArraySizeForEffectDraw()
+    /**
+     * Find the largest number of leds within an section of all strips, then return.
+     */
+    int computePrefferedSizeForNonUniqueEffect()
     {
         int m = 0;
 
-        each([&](auto &sm)
-             { m = max(m, sm.LedCount); });
+        each([&](Strip<12> &sm)
+             {
+                 for (size_t i = 0; i < sm.Positions.size(); i++)
+                 {
+                     StripSection *Position = sm.Positions[i];
+
+                     m = max(m, Position->Size);
+                 }
+             });
 
         return m;
     }
@@ -212,23 +216,32 @@ public:
                 bootupRender();
             }
 
-            int prefferedArraySize = computePrefferedArraySizeForEffectDraw();
             StripBehaviour behaviour = g_EffectPointer->getBehaviour();
 
-#if DEBUG_TO_SERIAL
+            vector<CRGB> r;
+
+            // if we dont render unique sections, we just run the draw
+            // before every strip and every section so we hugely
+            // save on computational power.
             if (!behaviour.uniqueSections)
             {
-
-                Serial.println("g_EffectPointer->createsUniqueSections() OPTION IS IGNORED; NOT IMPLEMENTED");
+                int prefferedArraySize = computePrefferedSizeForNonUniqueEffect();
+                r = g_EffectPointer->draw(Location::Everywhere, millis(), prefferedArraySize);
             }
-#endif
 
             each([&](auto &sm)
                  {
                      for (int i = 0; i < sm.Positions.size(); i++)
                      {
                          StripSection Position = *sm.Positions[i];
-                         vector<CRGB> r = g_EffectPointer->draw(Position.Location, millis(), prefferedArraySize);
+
+                         // see above; if we have unique sections,
+                         // quite frankly, we will need to run this draw
+                         // for every strip and every section within.
+                         if (behaviour.uniqueSections)
+                         {
+                             r = g_EffectPointer->draw(Position.Location, millis(), Position.Size);
+                         }
 
                          if (behaviour.fixAlignment)
                          {

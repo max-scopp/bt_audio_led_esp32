@@ -3,6 +3,9 @@
 /// Common
 /////////////
 
+#define DEFAULT_DEVICE_NAME "Max's E46 BALE System"
+#define DEFAULT_DEVICE_PASSWORD "buzz69420"
+
 #define BUZZER_PIN 26
 #define LOOP_DEBUG_PIN 27
 
@@ -33,6 +36,10 @@
 /// Audio
 /////////////
 
+#define INPUT_PIN 4 // Audio line input
+
+/// ============================================================
+
 #define PEAK2_DECAY_PER_SECOND 1.4f
 
 /// ============================================================
@@ -41,7 +48,6 @@
 #define MATRIX_WIDTH 48    // Number of pixels wide
 #define MATRIX_HEIGHT 16   // Number of pixels tall
 #define GAIN_DAMPEN 2      // Higher values cause auto gain to react more slowly (default 2)
-#define INPUT_PIN 4        // Audio line input
 #define COLOR_SPEED_PIN 33 // How fast palette rotates in spectrum bars
 #define MAX_COLOR_SPEED 64 //    ...and the max allowed
 
@@ -52,7 +58,7 @@
 #define SUPERSAMPLES 2                                    // How many supersamples to take
 #define SAMPLE_BITS 12                                    // Sample resolution (0-4095, default 12)
 #define MAX_ANALOG_IN ((1 << SAMPLE_BITS) * SUPERSAMPLES) // What our max analog input value is on all analog pins (4096 is default 12 bit resolution)
-#define MAX_VU 10000                                      // How high our VU could max out at.  Arbitarily tuned.
+#define MAX_VU 12000                                      // How high our VU could max out at.  Arbitarily tuned.
 #define ONSCREEN_FPS 0                                    // Debugging display of FPS count on LED screen
 #define MS_PER_SECOND 1000                                // 1000 milliseconds per second
 #define STACK_SIZE 4096                                   // Stack size for each new thread

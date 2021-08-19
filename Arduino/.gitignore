@@ -4,5 +4,6 @@
 .vscode/launch.json
 .vscode/ipch
 bin/
+build/
 
 platformio-device-monitor-*.log

@@ -3,7 +3,8 @@
 #include "StripManager.h"
 #include "Effects.h"
 
-#include "BluetoothService.h"
+#include "BluetoothLE.h"
+#include "Screen.h"
 
 #include "Constants.h"
 
@@ -16,15 +17,8 @@ TaskHandle_t samplerTask;
 
 // additional end user features
 TaskHandle_t bluetoothTask;
+TaskHandle_t screenTask;
 TaskHandle_t webTask; // Not used (yet)
-
-/// ==================================================================================
-
-volatile size_t gFPS = 0; // FFT frames per second
-volatile size_t mFPS = 0; // Matrix frames per second
-
-int g_Brightness = 30;   // 0-255 LED brightness scale
-int g_PowerLimit = 3000; // 900mW Power Limit
 
 /// ==================================================================================
 
@@ -38,6 +32,7 @@ void LEDGFXLoop(void *)
     for (;;)
     {
         manager.loop();
+        Screen::show();
     }
 }
 
@@ -47,7 +42,10 @@ void LEDGFXLoop(void *)
 void SamplerLoop(void *)
 {
     unsigned long samplerLastFrame = 0;
-    Serial.println("\n\nSampling...\n\n");
+
+    Serial.println("Audio Sampler Launching...");
+    Serial.printf("  FFT Size: %d bytes\n", MAX_SAMPLES);
+    gAnalyzer.StartInterrupts();
 
     for (;;)
     {
@@ -56,10 +54,14 @@ void SamplerLoop(void *)
 
         PeakData peaks = gAnalyzer.RunSamplerPass(BAND_COUNT);
         manager.SetPeaks(BAND_COUNT, peaks);
+
+        Screen::show();
     }
 }
 
 int channel = 0;
+bool startupFinished = false;
+bool checkingForUpdates = false;
 
 // StartupSoundLoop
 //
@@ -68,6 +70,8 @@ void StartupSoundLoop(void *)
 {
     int freq = 2000;
     int resolution = 8;
+
+    pinMode(BUZZER_PIN, OUTPUT);
 
     ledcSetup(channel, freq, resolution);
     ledcAttachPin(BUZZER_PIN, channel);
@@ -78,25 +82,36 @@ void StartupSoundLoop(void *)
 
     for (;;)
     {
+        if (startupFinished == true)
+        {
+            ledcWriteNote(channel, NOTE_C, 7);
+            delay(150);
+
+            ledcWriteTone(channel, 0);
+            startupFinished = NULL;
+        }
+        else if (checkingForUpdates)
+        {
+            ledcWriteNote(channel, NOTE_F, 3);
+            delay(300);
+
+            ledcWriteTone(channel, 0);
+            delay(1000);
+        }
+        else
+        {
+            delay(1);
+        }
     }
-}
-
-void startupFinished()
-{
-    ledcWriteNote(channel, NOTE_C, 7);
-    delay(150);
-
-    ledcDetachPin(BUZZER_PIN);
-    vTaskDelete(startupSoundTask);
 }
 
 void BluetoothLoop(void *pvParameters)
 {
     Serial.println("Init BLE Service...");
-    BluetoothService::setup();
+    BluetoothLE::setup();
 
     for (;;)
     {
-        BluetoothService::loop();
+        BluetoothLE::loop();
     }
 }

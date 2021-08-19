@@ -1,5 +1,7 @@
 enum Location
 {
+    Everywhere = 0x0,
+
     Left = 0x1,
     Right = 0x2,
 
